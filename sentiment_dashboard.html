@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Analytics Dashboard</title>
+    <!-- Lux Bootstrap CSS -->
+    <link href="https://bootswatch.com/5/lux/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Tailwind CSS for navbar styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    :root {
+        --primary: #5a7247;      /* Muted green */
+        --primary-dark: #465b38;  /* Darker green */
+        --success: #8a9b68;       /* Light olive green */
+        --success-dark: #6e7d53;  /* Darker olive */
+        --warning: #b4a17b;       /* Tan/beige */
+        --danger: #a0522d;        /* Sienna brown */
+        --danger-dark: #854826;   /* Darker brown */
+        --dark: #3c3c3c;          /* Dark gray */
+        --light: #f8f6f2;         /* Light beige */
+        --gray: #9c9c9c;          /* Medium gray */
+        --accept: #7d8c5b;        /* Accent green */
+        --primary-brown: #9C7C5B;    /* Warm medium brown */
+        --light-brown: #C8B6A6;      /* Light warm brown */
+        --primary-green: #7A9D7E;    /* Primary green */
+    }
+    
+    body {
+        background-color: #f8f6f2;
+        padding-top: 20px;
+        padding-bottom: 40px;
+        color: #3c3c3c;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(90, 114, 71, 0.2);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(90, 114, 71, 0.15);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .card {
+        margin-bottom: 25px;
+        border: 1px solid rgba(90, 114, 71, 0.2);
+        box-shadow: 0 4px 6px rgba(90, 114, 71, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background-color: rgba(90, 114, 71, 0.1);
+        border-bottom: 1px solid rgba(90, 114, 71, 0.2);
+        color: var(--primary);
+    }
+    
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 1100;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification.success {
+        background: var(--success);
+    }
+    
+    .notification.error {
+        background: var(--danger);
+    }
+    
+    .notification.warning {
+        background: var(--warning);
+        color: var(--dark);
+    }
+    
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+    
+    .btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+    
+    .progress-bar {
+        background-color: var(--primary);
+    }
+    
+    .alert-warning {
+        background-color: rgba(180, 161, 123, 0.2);
+        border-color: var(--warning);
+        color: var(--dark);
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--primary);
+    }
+    
+    header {
+        background: linear-gradient(to right, rgba(90, 114, 71, 0.1), rgba(138, 155, 104, 0.1));
+        border: 1px solid rgba(90, 114, 71, 0.2);
+    }
+    
+    .ai-suggestion {
+        background: rgba(90, 114, 71, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 12px;
+        margin: 15px 0;
+        border-radius: 4px;
+        color: var(--dark);
+    }
+    
+    .upload-area {
+        border: 2px dashed rgba(90, 114, 71, 0.3);
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        background: rgba(90, 114, 71, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-area:hover, .upload-area.dragover {
+        background: rgba(90, 114, 71, 0.1);
+        border-color: var(--primary);
+    }
+    
+    .filter-section {
+        background: rgba(90, 114, 71, 0.05);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .sentiment-positive {
+        color: var(--success);
+    }
+    
+    .sentiment-negative {
+        color: var(--danger);
+    }
+    
+    .sentiment-neutral {
+        color: var(--warning);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+    
+    .insight-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid var(--primary);
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(90, 114, 71, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* KPI Cards Styles */
+    #kpiCardsRow .card {
+        margin-bottom: 0;
+        transition: all 0.3s ease;
+    }
+    
+    #kpiCardsRow .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Instructions Styles */
+    .instructions {
+        background: rgba(90, 114, 71, 0.05);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .instructions h4 {
+        margin-top: 0;
+        color: var(--primary);
+    }
+    
+    .instructions ol {
+        padding-left: 20px;
+    }
+    
+    .instructions li {
+        margin-bottom: 10px;
+    }
+    
+    .no-data-placeholder {
+        text-align: center;
+        padding: 40px;
+        color: var(--gray);
+        font-style: italic;
+    }
+    /* Modal styles */
+.fixed {
+    position: fixed;
+}
+
+.inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.bg-black {
+    background-color: #000;
+}
+
+.bg-opacity-50 {
+    --tw-bg-opacity: 0.5;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.z-50 {
+    z-index: 50;
+}
+
+.hidden {
+    display: none;
+}
+
+.rounded-2xl {
+    border-radius: 1rem;
+}
+
+.max-w-md {
+    max-width: 28rem;
+}
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.form-input {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    width: 100%;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 3px rgba(156, 124, 91, 0.1);
+}
+
+/* Toggle switch styles for settings */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.peer:checked ~ .peer-checked\:bg-\[var\(--primary-brown\)\] {
+    background-color: var(--primary-brown);
+}
+
+.peer:checked ~ .peer-checked\:after\:translate-x-full:after {
+    transform: translateX(100%);
+}
+
+.peer:checked ~ .peer-checked\:after\:border-white:after {
+    border-color: white;
+}
+    /* Sentiment chart center text */
+    .sentiment-center-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    
+    .sentiment-total {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary);
+    }
+    
+    .sentiment-percentage {
+        font-size: 1rem;
+        color: var(--dark);
+    }
+    
+    /* Column mapping styles */
+    .column-mapping-row {
+        margin-bottom: 15px;
+    }
+    
+    /* NEW: Data source selector */
+    .data-source-selector {
+        display: flex;
+        margin-bottom: 20px;
+        background: rgba(90, 114, 71, 0.1);
+        border-radius: 8px;
+        padding: 5px;
+        width: fit-content;
+    }
+    
+    .data-source-option {
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    
+    .data-source-option.active {
+        background: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        color: var(--primary);
+    }
+    
+    /* NEW: Scheduler data info */
+    .scheduler-data-info {
+        background: rgba(90, 114, 71, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--primary);
+    }
+
+    /* Navbar Styles */
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+    }
+    
+    .notification-icon {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #e53e3e;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    /* Dark Mode Styles */
+    .dark-mode .navbar {
+        background: rgba(39, 55, 77, 0.95);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        color: #E9ECEF;
+    }
+    
+    .dark-mode-toggle {
+        position: relative;
+        width: 50px;
+        height: 26px;
+        background: #ccc;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .dark-mode-toggle.active {
+        background: var(--primary-brown);
+    }
+
+    .dark-mode-toggle::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s;
+    }
+
+    .dark-mode-toggle.active::after {
+        transform: translateX(24px);
+    }
+    
+    /* Mobile menu styles */
+    #mobile-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.3s;
+    }
+    
+    #mobile-menu.show {
+        transform: translateX(0);
+    }
+    
+    .dark-mode #mobile-menu {
+        background-color: #1E2A3A;
+    }
+    
+    .navbar .font-bold {
+        text-transform: none !important;
+    }
+    
+    /* Remove gap above navbar */
+    body, html {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Make navbar skinnier */
+    .navbar {
+        padding-top: 0.95rem !important;
+        padding-bottom: 0.95rem !important;
+    }
+
+    /* Utility classes */
+    .hidden {
+        display: none !important;
+    }
+    /* Navigation links styling */
+.hidden.md\:flex.space-x-6 {
+    display: flex !important;
+}
+
+.space-x-6 > * + * {
+    margin-left: 1.5rem;
+}
+
+.text-\[var\(--primary-brown\)\] {
+    color: var(--primary-brown);
+}
+
+.border-b-2 {
+    border-bottom-width: 2px;
+}
+
+.border-\[var\(--primary-brown\)\] {
+    border-color: var(--primary-brown);
+}
+/* ADD THE CONTAINER FIX RIGHT HERE */
+.container {
+    max-width: 1350px !important;
+    margin: 0 auto !important;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+.card, .stat-card {
+    max-width: 100%;
+}
+
+/* Add this to your existing styles */
+#user-profile,
+#notification-icons,
+#reminder-icons {
+  display: flex !important;
+}
+
+#login-button, 
+#signup-button {
+  display: none !important;
+}
+</style>
+</style>
+    <style>
+  /* 🔹 Navbar from login page */
+  nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 12px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  nav a {
+    margin-left: 20px;
+    font-weight: 500;
+    color: var(--dark);
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  nav a:hover {
+    color: var(--primary);
+  }
+
+  /* 🔹 Glassy cards effect */
+  .card, .insight-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  }
+
+  /* 🔹 Gradient button to match login */
+  .btn-primary {
+    background: linear-gradient(to right, var(--primary), var(--danger)) !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+    padding: 8px 18px;
+  }
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  /* 🔹 App navigation look (Overview/Insights/Reports) */
+  .app-nav {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .app-nav-item {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--dark);
+    transition: 0.3s;
+  }
+  .app-nav-item:hover {
+    background: rgba(90, 114, 71, 0.15);
+    color: var(--primary);
+  }
+  .app-nav-item.active {
+    background: var(--primary);
+    color: white;
+  }
+  
+</style>
+
+
+</head>
+<body>
+    <!-- Navigation bar from scheduler -->
+<nav class="navbar bg-white shadow-sm py-4 px-6">
+    <div class="max-w-6xl mx-auto flex justify-between items-center w-full">
+        <a href="login.html" class="text-xl font-bold text-[var(--primary-brown)] flex items-center">
+            <i class="fa-solid fa-seedling mr-2"></i>GrowthOps
+        </a>
+        
+        <div class="hidden md:flex space-x-6">
+            <a href="login.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Home</a>
+            <a href="index.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">AI Content Generator</a>
+            <a href="scheduler.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Smart Scheduler</a>
+            <a href="sentiment_dashboard.html" class="text-[var(--primary-brown)] font-medium border-b-2 border-[var(--primary-brown)]">Performance Analytics</a>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Notification icons -->
+            <div class="relative" id="notification-icons">
+                <button id="notif-btn" class="relative px-2">
+                    <i class="fas fa-bell text-gray-700 text-xl"></i>
+                    <span class="notification-badge" id="notif-badge">3</span>
+                </button>
+                <div id="notif-dropdown" class="hidden absolute right-0 mt-3 bg-white rounded-xl shadow-lg p-4 z-50 w-72">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold">Notifications</h4>
+                        <button class="text-xs text-[var(--primary-brown)] hover:underline" onclick="markAllNotificationsAsRead()">Mark all as read</button>
+                    </div>
+                    <ul class="text-sm space-y-2">
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Post scheduling opened')">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-[var(--primary-green)] mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">3 posts scheduled for today</p>
+                                    <p class="text-gray-500 text-xs">2 hours ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Analytics dashboard opened')">
+                            <div class="flex items-start">
+                                <i class="fas fa-chart-line text-[var(--primary-brown)] mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">Your engagement increased by 12% this week</p>
+                                    <p class="text-gray-500 text-xs">5 hours ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('New features shown')">
+                            <div class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">New AI feature available</p>
+                                    <p class="text-gray-500 text-xs">1 day ago</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            
+            
+            <!-- User profile -->
+            <div class="user-profile relative" id="user-profile">
+    <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" alt="Guest" class="profile-img mr-2" id="profile-img">
+    <span id="profile-name" class="text-gray-700">User</span>
+    <button id="profile-menu-btn" class="ml-2 text-gray-600"><i class="fas fa-caret-down"></i></button>
+    <div id="profile-menu" class="absolute right-0 mt-2 bg-white rounded-xl shadow-lg p-2 hidden z-50" style="min-width:150px;">
+    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+</div>
+</div>
+            
+            <!-- Dark Mode Toggle -->
+            <div class="flex items-center mr-4">
+                <span class="text-sm text-gray-600 mr-2 hidden md:inline">Dark</span>
+                <div id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+            </div>
+            
+            <div class="md:hidden ml-4">
+                <button id="mobile-menu-button" class="text-gray-700">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center space-y-8 transform translate-x-full transition-transform duration-300 dark:bg-gray-900">
+    <button id="close-mobile-menu" class="absolute top-6 right-6 text-2xl text-gray-700 dark:text-gray-300">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <a href="login.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">Home</a>
+    <a href="index.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">AI Content Generator</a>
+    <a href="scheduler.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">Smart Scheduler</a>
+    <a href="sentiment_dashboard.html" class="text-2xl font-medium text-[var(--primary-brown)]">Performance Analytics</a>
+    
+    <div class="flex space-x-4 mt-8">
+        <button onclick="logout()" class="px-6 py-3 rounded-lg border border-[var(--primary-brown)] text-[var(--primary-brown)] dark:border-[var(--light-brown)] dark:text-[var(--light-brown)]">Logout</button>
+    </div>
+    
+    <!-- Add dark mode toggle to mobile menu -->
+    <div class="flex items-center mt-8">
+        <span class="text-lg text-gray-700 dark:text-gray-300 mr-4">Dark Mode</span>
+        <div id="mobile-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+    </div>
+</div>
+
+
+    
+
+    <div class="container">
+        <header class="p-4 rounded mb-4">
+            <h1 class="display-5 fw-bold"><i class="fas fa-chart-line me-2"></i> Social Media Analytics Dashboard</h1>
+            <p class="lead">Analyze your scheduled content performance and gain actionable insights</p>
+        </header>
+
+        <!-- Instructions Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="instructions">
+                    <h4><i class="fas fa-info-circle me-2"></i> How to Use This Dashboard</h4>
+                    <ol>
+                        <li>This dashboard automatically analyzes your scheduled content from the Content Scheduler</li>
+                        <li>Use the filters to refine your analysis by date range or sentiment</li>
+                        <li>Review the AI-generated insights for actionable recommendations</li>
+                        <li>Optionally, you can upload external CSV or Excel files for additional analysis</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Data Source Selector -->
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <div class="data-source-selector">
+                    <div class="data-source-option active" data-source="scheduler">
+                        <i class="fas fa-calendar-alt me-1"></i> Scheduler Data
+                    </div>
+                    <div class="data-source-option" data-source="file">
+                        <i class="fas fa-file-upload me-1"></i> Upload File
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduler Data Info -->
+        <div class="row" id="schedulerDataInfo">
+            <div class="col-lg-12">
+                <div class="scheduler-data-info">
+                    <h5><i class="fas fa-database me-2"></i> Analyzing Scheduled Content</h5>
+                    <p class="mb-0" id="schedulerDataStatus">Loading your scheduled posts from the Content Scheduler...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Upload Section (Initially Hidden) -->
+        <div class="row" id="fileUploadSection" style="display: none;">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-file-upload me-2"></i> Upload External Data</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: var(--primary);"></i>
+                            <h5>Drag & Drop your CSV or Excel file here</h5>
+                            <p class="text-muted">Or click to browse your files</p>
+                            <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;">
+                        </div>
+                        
+                        <div id="columnMapping" style="display: none;" class="mt-4">
+                            <h5>Column Mapping</h5>
+                            <p class="text-muted">The system has automatically detected these columns. You can change them if needed.</p>
+                            <div class="row column-mapping-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="textColumn" class="form-label">Text Column</label>
+                                    <select class="form-select" id="textColumn"></select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="dateColumn" class="form-label">Date Column</label>
+                                    <select class="form-select" id="dateColumn"></select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="dayColumn" class="form-label">Day Column</label>
+                                    <select class="form-select" id="dayColumn">
+                                        <option value="">Not applicable</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row column-mapping-row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="timeColumn" class="form-label">Time Column</label>
+                                    <select class="form-select" id="timeColumn">
+                                        <option value="">Not applicable</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="brandColumn" class="form-label">Brand Column</label>
+                                    <select class="form-select" id="brandColumn">
+                                        <option value="">Not applicable</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="engagementColumn" class="form-label">Engagement Column</label>
+                                    <select class="form-select" id="engagementColumn">
+                                        <option value="">Not applicable</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="analyzeBtn">
+                                <i class="fas fa-chart-line me-1"></i> Analyze Data
+                            </button>
+                        </div>
+
+                        <button class="btn btn-outline-danger mt-2" id="removeDataBtn" style="display:none;">
+                            <i class="fas fa-trash-alt me-1"></i> Remove External Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-filter me-2"></i> Filters</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-section">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="dateRange" class="form-label">Date Range</label>
+                                    <select class="form-select" id="dateRange">
+                                        <option value="all" selected>All time</option>
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30">Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                        <option value="365">Last year</option>
+                                        <option value="custom">Custom range</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="platformFilter" class="form-label">Platform Filter</label>
+                                    <select class="form-select" id="platformFilter">
+                                        <option value="all">All platforms</option>
+                                        <option value="twitter">Twitter</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="tiktok">TikTok</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="sentimentFilter" class="form-label">Sentiment Filter</label>
+                                    <select class="form-select" id="sentimentFilter">
+                                        <option value="all">All sentiments</option>
+                                        <option value="positive">Positive only</option>
+                                        <option value="negative">Negative only</option>
+                                        <option value="neutral">Neutral only</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" id="customDateRange" style="display: none;">
+                                <div class="col-md-6 mb-3">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards Row - Always visible -->
+        <div class="row mt-4" id="kpiCardsRow">
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Total Posts</h5>
+                    <p id="kpiTotalPosts" class="h3 mb-0">0</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Positive</h5>
+                    <p id="kpiPositivePosts" class="h3 mb-0 text-success">0</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Negative</h5>
+                    <p id="kpiNegativePosts" class="h3 mb-0 text-danger">0</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Neutral</h5>
+                    <p id="kpiNeutralPosts" class="h3 mb-0 text-warning">0</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Avg Sentiment</h5>
+                    <p id="kpiAvgSentiment" class="h3 mb-0">0%</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center p-3">
+                    <h5>Engagement</h5>
+                    <p id="kpiEngagement" class="h3 mb-0">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-chart-bar me-2"></i> Performance Overview</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div id="performanceNoData" class="no-data-placeholder">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <p>No data available for performance metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-smile me-2"></i> Sentiment Analysis</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative;">
+                            <canvas id="sentimentChart"></canvas>
+                            <div id="sentimentCenterText" class="sentiment-center-text" style="display: none;">
+                                <div class="sentiment-total" id="sentimentTotal">0</div>
+                                <div class="sentiment-percentage">Total Posts</div>
+                            </div>
+                        </div>
+                        <div id="sentimentNoData" class="no-data-placeholder">
+                            <i class="fas fa-smile fa-3x mb-3"></i>
+                            <p>No data available for sentiment analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-lightbulb me-2"></i> AI-Generated Insights</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="insightsContainer">
+                            <p class="text-center text-muted">No data available to generate insights</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-hashtag me-2"></i> Top Topics</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="topicsChart"></canvas>
+                        </div>
+                        <div id="topicsNoData" class="no-data-placeholder">
+                            <i class="fas fa-hashtag fa-3x mb-3"></i>
+                            <p>No data available for topic analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-clock me-2"></i> Engagement by Time</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                        <div id="timeNoData" class="no-data-placeholder">
+                            <i class="fas fa-clock fa-3x mb-3"></i>
+                            <p>No data available for time analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export to Scheduler Button -->
+        <div class="row mt-4">
+            <div class="col-lg-12 text-center">
+                <button class="btn btn-primary btn-lg" id="exportToSchedulerBtn" style="display: none;">
+                    <i class="fas fa-calendar-alt me-2"></i> Apply Insights to Scheduler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        Operation completed successfully!
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- PapaParse for CSV processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <!-- SheetJS for Excel processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Global variables
+        let currentDataSource = "scheduler"; // "scheduler" or "file"
+        let csvData = [];
+        let chartInstances = {};
+        let sentimentAnalysis = {
+            positive: 0,
+            negative: 0,
+            neutral: 0
+        };
+
+        // KPI data
+        let kpiData = {
+            total: 0,
+            positive: 0,
+            negative: 0,
+            neutral: 0,
+            avgSentiment: 0,
+            engagement: 0
+        };
+        
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const columnMapping = document.getElementById('columnMapping');
+        const textColumn = document.getElementById('textColumn');
+        const dateColumn = document.getElementById('dateColumn');
+        const dayColumn = document.getElementById('dayColumn');
+        const timeColumn = document.getElementById('timeColumn');
+        const brandColumn = document.getElementById('brandColumn');
+        const engagementColumn = document.getElementById('engagementColumn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const dateRange = document.getElementById('dateRange');
+        const platformFilter = document.getElementById('platformFilter');
+        const sentimentFilter = document.getElementById('sentimentFilter');
+        const customDateRange = document.getElementById('customDateRange');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const insightsContainer = document.getElementById('insightsContainer');
+        const notification = document.getElementById('notification');
+        const exportToSchedulerBtn = document.getElementById('exportToSchedulerBtn');
+        const sentimentCenterText = document.getElementById('sentimentCenterText');
+        const sentimentTotal = document.getElementById('sentimentTotal');
+        const schedulerDataInfo = document.getElementById('schedulerDataInfo');
+        const fileUploadSection = document.getElementById('fileUploadSection');
+        const dataSourceOptions = document.querySelectorAll('.data-source-option');
+        const schedulerDataStatus = document.getElementById('schedulerDataStatus');
+
+        // Initialize event listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        analyzeBtn.addEventListener('click', analyzeData);
+        dateRange.addEventListener('change', toggleCustomDateRange);
+        platformFilter.addEventListener('change', updateVisualizations);
+        sentimentFilter.addEventListener('change', updateVisualizations);
+        startDate.addEventListener('change', updateVisualizations);
+        endDate.addEventListener('change', updateVisualizations);
+        exportToSchedulerBtn.addEventListener('click', exportToScheduler);
+
+        // NEW: Data source selector event listeners
+        dataSourceOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const source = this.dataset.source;
+                
+                // Update UI
+                dataSourceOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide appropriate sections
+                if (source === 'scheduler') {
+                    schedulerDataInfo.style.display = 'block';
+                    fileUploadSection.style.display = 'none';
+                    currentDataSource = 'scheduler';
+                    loadSchedulerData();
+                } else {
+                    schedulerDataInfo.style.display = 'none';
+                    fileUploadSection.style.display = 'block';
+                    currentDataSource = 'file';
+                    
+                    // If file data is already loaded, update visualizations
+                    if (csvData.length > 0) {
+                        updateVisualizations();
+                    }
+                }
+            });
+        });
+
+        // Set default date values
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        startDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+        endDate.value = today.toISOString().split('T')[0];
+
+        // Add drag and drop event listeners
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('dragover');
+        }
+        
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                handleFileUpload({ target: { files: files } });
+            }
+        }
+
+        // NEW: Function to load data from scheduler
+        // Update the loadSchedulerData function to process scheduler data properly
+        function loadSchedulerData() {
+            schedulerDataStatus.textContent = "Loading your scheduled posts from the Content Scheduler...";
+            
+            try {
+                const savedPosts = localStorage.getItem('scheduledPosts');
+                
+                if (savedPosts) {
+                    const scheduledPosts = JSON.parse(savedPosts);
+                    
+                    if (scheduledPosts.length > 0) {
+                        // Convert scheduler data to format expected by dashboard - REPLACE THIS SECTION
+                        csvData = scheduledPosts.map(post => {
+                            // Calculate engagement value from prediction (remove % and convert to number)
+                            let engagementValue = 0;
+                            if (post.prediction) {
+                                engagementValue = parseFloat(post.prediction.toString().replace('%', '')) || 0;
+                            }
+                            
+                            // Determine status based on time
+                            const postTime = new Date(post.time);
+                            const now = new Date();
+                            const status = postTime < now ? 'published' : 'scheduled';
+                            
+                            return {
+                                id: post.id,
+                                content: post.content,
+                                platform: post.platform,
+                                datetime: post.time,
+                                scheduled_time: post.time,
+                                engagement: engagementValue,
+                                engagement_percentage: post.prediction,
+                                status: status,
+                                sentiment: '', // Will be calculated in analyzeData()
+                                comments: post.comments || [],
+                                actual_engagement: post.actualEngagement || '',
+                                clicks: post.clicks || 0,
+                                shares: post.shares || 0,
+                                reminder: post.reminder || { enabled: false, minutes: 0 }
+                            };
+                        });
+
+                        // VALIDATION: Log for debugging (you can remove this in production)
+                        console.log(`Loaded ${csvData.length} posts from scheduler`);
+                        if (csvData.length > 0) {
+                            console.log('Sample post:', csvData[0]);
+                        } else {
+                            console.log('No posts found in scheduler data');
+                        }
+
+                        // VALIDATION: Verify we have all expected posts
+                        if (csvData.length !== scheduledPosts.length) {
+                            console.error('Data mapping error: csvData length', csvData.length, 
+                                        'does not match scheduledPosts length', scheduledPosts.length);
+                        } else {
+                            console.log('Data mapping successful: All posts transferred correctly');
+                        }
+                        
+                        // Perform sentiment analysis on the new data
+                        analyzeData();
+                        
+                        schedulerDataStatus.textContent = `Loaded ${scheduledPosts.length} scheduled posts from the Content Scheduler`;
+                        showNotification('Scheduler data updated successfully!');
+                    } else {
+                        schedulerDataStatus.textContent = "No scheduled posts found in the Content Scheduler";
+                        resetVisualizations();
+                    }
+                } else {
+                    schedulerDataStatus.textContent = "No scheduled posts found in the Content Scheduler";
+                    resetVisualizations();
+                }
+            } catch (error) {
+                console.error("Error loading scheduler data:", error);
+                schedulerDataStatus.textContent = "Error loading data from Content Scheduler";
+                resetVisualizations();
+            }
+        }
+
+        // NEW: Function to listen for scheduler updates
+        function setupSchedulerListeners() {
+            // Listen for custom events
+            window.addEventListener('schedulerUpdated', function() {
+                loadSchedulerData();
+            });
+            
+            // Also check localStorage periodically for changes
+            let lastUpdateTime = localStorage.getItem('schedulerLastUpdate') || 0;
+            
+            setInterval(() => {
+                const currentUpdateTime = localStorage.getItem('schedulerLastUpdate') || 0;
+                if (currentUpdateTime > lastUpdateTime) {
+                    lastUpdateTime = currentUpdateTime;
+                    loadSchedulerData();
+                }
+            }, 2000); // Check every 2 seconds
+        }
+
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Show loading state
+            analyzeBtn.innerHTML = '<div class="loading"></div> Processing...';
+            analyzeBtn.disabled = true;
+
+            if (file.name.endsWith(".csv")) {
+                // Parse CSV with PapaParse
+                Papa.parse(file, {
+                    header: true,
+                    dynamicTyping: true,
+                    complete: function(results) {
+                        if (results.errors.length > 0) {
+                            showNotification('Error parsing CSV: ' + results.errors[0].message, 'error');
+                        } else {
+                            csvData = results.data;
+                            afterFileLoaded(results.meta.fields);
+                        }
+                        analyzeBtn.innerHTML = '<i class="fas fa-chart-line me-1"></i> Analyze Data';
+                        analyzeBtn.disabled = false;
+                    },
+                    error: function(error) {
+                        showNotification('Error reading file: ' + error.message, 'error');
+                        analyzeBtn.innerHTML = '<i class="fas fa-chart-line me-1"></i> Analyze Data';
+                        analyzeBtn.disabled = false;
+                    }
+                });
+            } else if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+                // Parse Excel with SheetJS
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: "array" });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                    
+                    if (jsonData.length === 0) {
+                        showNotification("Excel file is empty", "error");
+                    } else {
+                        csvData = jsonData;
+                        const fields = Object.keys(jsonData[0]);
+                        afterFileLoaded(fields);
+                    }
+                    analyzeBtn.innerHTML = '<i class="fas fa-chart-line me-1"></i> Analyze Data';
+                    analyzeBtn.disabled = false;
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                showNotification("Unsupported file format. Please upload CSV or Excel.", "error");
+                analyzeBtn.innerHTML = '<i class="fas fa-chart-line me-1"></i> Analyze Data';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        // Helper to populate dropdowns and show mapping UI
+        function afterFileLoaded(fields) {
+            showNotification('File uploaded successfully! Analyzing data...');
+            populateColumnDropdowns(fields);
+            autoSelectColumns(fields);
+            columnMapping.style.display = 'block';
+            document.getElementById("removeDataBtn").style.display = "inline-block";
+            
+            // Automatically analyze the data
+            setTimeout(() => {
+                analyzeData();
+            }, 500);
+        }
+
+        // Function to populate column dropdowns
+        function populateColumnDropdowns(fields) {
+            // Clear existing options
+            textColumn.innerHTML = '';
+            dateColumn.innerHTML = '';
+            dayColumn.innerHTML = '<option value="">Not applicable</option>';
+            timeColumn.innerHTML = '<option value="">Not applicable</option>';
+            brandColumn.innerHTML = '<option value="">Not applicable</option>';
+            engagementColumn.innerHTML = '<option value="">Not applicable</option>';
+            
+            // Add options for each field
+            fields.forEach(field => {
+                if (field) {
+                    textColumn.appendChild(new Option(field, field));
+                    dateColumn.appendChild(new Option(field, field));
+                    dayColumn.appendChild(new Option(field, field));
+                    timeColumn.appendChild(new Option(field, field));
+                    brandColumn.appendChild(new Option(field, field));
+                    engagementColumn.appendChild(new Option(field, field));
+                }
+            });
+        }
+
+        // Function to auto-select columns based on common naming patterns
+        function autoSelectColumns(fields) {
+            const textPatterns = ['text', 'content', 'message', 'post', 'tweet', 'comment'];
+            const datePatterns = ['date', 'time', 'datetime', 'timestamp', 'created', 'posted'];
+            const dayPatterns = ['day', 'weekday'];
+            const timePatterns = ['hour', 'time', 'timeofday'];
+            const brandPatterns = ['brand', 'company', 'organization', 'account'];
+            const engagementPatterns = ['engagement', 'likes', 'shares', 'comments', 'reactions', 'views'];
+            
+            // Helper function to find matching field
+            function findMatch(patterns, fields) {
+                for (const pattern of patterns) {
+                    for (const field of fields) {
+                        if (field.toLowerCase().includes(pattern)) {
+                            return field;
+                        }
+                    }
+                }
+                return '';
+            }
+            
+            // Set values
+            textColumn.value = findMatch(textPatterns, fields) || (fields[0] || '');
+            dateColumn.value = findMatch(datePatterns, fields) || '';
+            dayColumn.value = findMatch(dayPatterns, fields) || '';
+            timeColumn.value = findMatch(timePatterns, fields) || '';
+            brandColumn.value = findMatch(brandPatterns, fields) || '';
+            engagementColumn.value = findMatch(engagementPatterns, fields) || '';
+        }
+
+        // Function to analyze data
+        function analyzeData() {
+            if (csvData.length === 0) {
+                showNotification("No data to analyze", "error");
+                return;
+            }
+            
+            // NEW: Verify we're processing all posts
+            console.log(`Analyzing ${csvData.length} posts`);
+
+            // Reset sentiment analysis
+            sentimentAnalysis = {
+                positive: 0,
+                negative: 0,
+                neutral: 0
+            };
+            
+            // Process each row - ADD VALIDATION
+            let processedCount = 0;
+            csvData.forEach(row => {
+                // Perform sentiment analysis (simplified for demo)
+                const text = row.content || ''; // Use the actual content field
+                const sentiment = analyzeSentiment(text);
+                
+                // Update sentiment counts
+                sentimentAnalysis[sentiment]++;
+                
+                // Add sentiment to row for filtering
+                row.sentiment = sentiment;
+                processedCount++;
+            });
+
+            // NEW: Verify all posts were processed
+            if (processedCount !== csvData.length) {
+                console.error(`Processed ${processedCount} posts but expected ${csvData.length}`);
+            }
+            
+            // Update visualizations
+            updateVisualizations();
+            
+            showNotification(`Analyzed ${processedCount} posts successfully!`);
+        }
+
+        // Function to analyze sentiment (simplified for demo)
+        function analyzeSentiment(text) {
+            if (!text) return 'neutral';
+            
+            const positiveWords = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'love', 'happy', 'fantastic', 'best', 'awesome'];
+            const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'disappointing', 'sad', 'angry', 'frustrating', 'poor'];
+            
+            const lowerText = text.toLowerCase();
+            let positiveCount = 0;
+            let negativeCount = 0;
+            
+            positiveWords.forEach(word => {
+                if (lowerText.includes(word)) positiveCount++;
+            });
+            
+            negativeWords.forEach(word => {
+                if (lowerText.includes(word)) negativeCount++;
+            });
+            
+            if (positiveCount > negativeCount) return 'positive';
+            if (negativeCount > positiveCount) return 'negative';
+            return 'neutral';
+        }
+
+        // Function to toggle custom date range
+        function toggleCustomDateRange() {
+            if (dateRange.value === 'custom') {
+                customDateRange.style.display = 'flex';
+            } else {
+                customDateRange.style.display = 'none';
+            }
+            updateVisualizations();
+        }
+
+        // Function to update all visualizations
+        function updateVisualizations() {
+            if (csvData.length === 0) {
+                resetVisualizations();
+                return;
+            }
+            
+            // Update KPI cards
+            updateKPICards();
+            
+            // Update charts
+            updateSentimentChart();
+            updatePerformanceChart();
+            updateTopicsChart();
+            updateTimeChart();
+            
+            // Update insights
+            generateInsights();
+            
+            // Show export button if data is from scheduler
+            if (currentDataSource === 'scheduler') {
+                exportToSchedulerBtn.style.display = 'block';
+            } else {
+                exportToSchedulerBtn.style.display = 'none';
+            }
+        }
+
+        // Function to reset all visualizations
+        function resetVisualizations() {
+            // Reset KPI cards
+            document.getElementById("kpiTotalPosts").textContent = "0";
+            document.getElementById("kpiPositivePosts").textContent = "0";
+            document.getElementById("kpiNegativePosts").textContent = "0";
+            document.getElementById("kpiNeutralPosts").textContent = "0";
+            document.getElementById("kpiAvgSentiment").textContent = "0%";
+            document.getElementById("kpiEngagement").textContent = "0";
+            
+            // Hide charts and show placeholders
+            document.getElementById("performanceNoData").style.display = "block";
+            document.getElementById("sentimentNoData").style.display = "block";
+            document.getElementById("topicsNoData").style.display = "block";
+            document.getElementById("timeNoData").style.display = "block";
+            
+            // Hide chart canvases
+            document.getElementById("performanceChart").style.display = "none";
+            document.getElementById("sentimentChart").style.display = "none";
+            document.getElementById("topicsChart").style.display = "none";
+            document.getElementById("timeChart").style.display = "none";
+            
+            // Hide sentiment center text
+            sentimentCenterText.style.display = "none";
+            
+            // Reset insights
+            insightsContainer.innerHTML = '<p class="text-center text-muted">No data available to generate insights</p>';
+            
+            // Hide export button
+            exportToSchedulerBtn.style.display = "none";
+        }
+
+        // Function to update KPI cards
+        function updateKPICards() {
+            // Calculate KPIs
+            kpiData.total = csvData.length;
+            kpiData.positive = sentimentAnalysis.positive;
+            kpiData.negative = sentimentAnalysis.negative;
+            kpiData.neutral = sentimentAnalysis.neutral;
+            kpiData.avgSentiment = Math.round((sentimentAnalysis.positive / csvData.length) * 100);
+            kpiData.engagement = calculateAverageEngagement();
+            
+            // Update DOM
+            document.getElementById("kpiTotalPosts").textContent = kpiData.total;
+            document.getElementById("kpiPositivePosts").textContent = kpiData.positive;
+            document.getElementById("kpiNegativePosts").textContent = kpiData.negative;
+            document.getElementById("kpiNeutralPosts").textContent = kpiData.neutral;
+            document.getElementById("kpiAvgSentiment").textContent = kpiData.avgSentiment + "%";
+            document.getElementById("kpiEngagement").textContent = kpiData.engagement;
+        }
+
+        // Function to calculate average engagement (simplified)
+        function calculateAverageEngagement() {
+            if (!engagementColumn.value) return 0;
+            
+            let total = 0;
+            let count = 0;
+            
+            csvData.forEach(row => {
+                const value = row[engagementColumn.value];
+                if (value && !isNaN(value)) {
+                    total += Number(value);
+                    count++;
+                }
+            });
+            
+            return count > 0 ? Math.round(total / count) : 0;
+        }
+
+        // Function to update sentiment chart
+        function updateSentimentChart() {
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+            
+            // Destroy previous chart instance if exists
+            if (chartInstances.sentimentChart) {
+                chartInstances.sentimentChart.destroy();
+            }
+            
+            // Show chart and hide placeholder
+            document.getElementById("sentimentNoData").style.display = "none";
+            document.getElementById("sentimentChart").style.display = "block";
+            sentimentCenterText.style.display = "block";
+            
+            // Update center text
+            sentimentTotal.textContent = kpiData.total;
+            
+            // Create new chart
+            chartInstances.sentimentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Negative', 'Neutral'],
+                    datasets: [{
+                        data: [sentimentAnalysis.positive, sentimentAnalysis.negative, sentimentAnalysis.neutral],
+                        backgroundColor: [
+                            'rgba(90, 114, 71, 0.8)',  // Primary green
+                            'rgba(160, 82, 45, 0.8)',  // Sienna brown
+                            'rgba(180, 161, 123, 0.8)' // Tan/beige
+                        ],
+                        borderColor: [
+                            'rgba(90, 114, 71, 1)',
+                            'rgba(160, 82, 45, 1)',
+                            'rgba(180, 161, 123, 1)'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const percentage = Math.round((value / kpiData.total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to update performance chart
+        function updatePerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Destroy previous chart instance if exists
+            if (chartInstances.performanceChart) {
+                chartInstances.performanceChart.destroy();
+            }
+            
+            // Show chart and hide placeholder
+            document.getElementById("performanceNoData").style.display = "none";
+            document.getElementById("performanceChart").style.display = "block";
+            
+            // Generate sample performance data
+            const platforms = ['Twitter', 'LinkedIn', 'Facebook', 'Instagram', 'TikTok'];
+            const engagementData = platforms.map(() => Math.floor(Math.random() * 1000) + 100);
+            
+            // Create new chart
+            chartInstances.performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: platforms,
+                    datasets: [{
+                        label: 'Engagement',
+                        data: engagementData,
+                        backgroundColor: 'rgba(90, 114, 71, 0.7)',
+                        borderColor: 'rgba(90, 114, 71, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Engagement Score'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Platform'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to update topics chart
+        function updateTopicsChart() {
+            const ctx = document.getElementById('topicsChart').getContext('2d');
+            
+            // Destroy previous chart instance if exists
+            if (chartInstances.topicsChart) {
+                chartInstances.topicsChart.destroy();
+            }
+            
+            // Show chart and hide placeholder
+            document.getElementById("topicsNoData").style.display = "none";
+            document.getElementById("topicsChart").style.display = "block";
+            
+            // Generate sample topics data
+            const topics = ['Technology', 'Marketing', 'Design', 'Business', 'Innovation', 'Strategy'];
+            const frequency = topics.map(() => Math.floor(Math.random() * 50) + 10);
+            
+            // Create new chart
+            chartInstances.topicsChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: topics,
+                    datasets: [{
+                        data: frequency,
+                        backgroundColor: [
+                            'rgba(90, 114, 71, 0.7)',
+                            'rgba(138, 155, 104, 0.7)',
+                            'rgba(180, 161, 123, 0.7)',
+                            'rgba(160, 82, 45, 0.7)',
+                            'rgba(125, 140, 91, 0.7)',
+                            'rgba(70, 91, 56, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(90, 114, 71, 1)',
+                            'rgba(138, 155, 104, 1)',
+                            'rgba(180, 161, 123, 1)',
+                            'rgba(160, 82, 45, 1)',
+                            'rgba(125, 140, 91, 1)',
+                            'rgba(70, 91, 56, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to update time chart
+        function updateTimeChart() {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            
+            // Destroy previous chart instance if exists
+            if (chartInstances.timeChart) {
+                chartInstances.timeChart.destroy();
+            }
+            
+            // Show chart and hide placeholder
+            document.getElementById("timeNoData").style.display = "none";
+            document.getElementById("timeChart").style.display = "block";
+            
+            // Generate sample time data
+            const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+            const engagementByHour = hours.map(() => Math.floor(Math.random() * 100) + 20);
+            
+            // Create new chart
+            chartInstances.timeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Engagement by Hour',
+                        data: engagementByHour,
+                        fill: true,
+                        backgroundColor: 'rgba(90, 114, 71, 0.2)',
+                        borderColor: 'rgba(90, 114, 71, 1)',
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(90, 114, 71, 1)',
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Engagement'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time of Day'
+                            },
+                            ticks: {
+                                maxTicksLimit: 12
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to generate insights
+        function generateInsights() {
+            if (csvData.length === 0) {
+                insightsContainer.innerHTML = '<p class="text-center text-muted">No data available to generate insights</p>';
+                return;
+            }
+            
+            // Clear previous insights
+            insightsContainer.innerHTML = '';
+            
+            // Generate sample insights based on data
+            const insights = [
+                {
+                    title: "Sentiment Distribution",
+                    content: `Your content has a ${Math.round((sentimentAnalysis.positive / csvData.length) * 100)}% positive sentiment rate. Consider increasing this by focusing on more positive messaging.`,
+                    icon: "fas fa-smile",
+                    color: "success"
+                },
+                {
+                    title: "Optimal Posting Time",
+                    content: "Your content performs best when posted between 9 AM and 12 PM. Schedule more posts during this time window for maximum engagement.",
+                    icon: "fas fa-clock",
+                    color: "primary"
+                },
+                {
+                    title: "Top Performing Platform",
+                    content: "LinkedIn generates 35% more engagement than other platforms. Consider focusing more resources on this channel.",
+                    icon: "fas fa-thumbs-up",
+                    color: "info"
+                },
+                {
+                    title: "Content Length Analysis",
+                    content: "Posts between 120-160 characters receive 42% more engagement. Keep your messages concise for better performance.",
+                    icon: "fas fa-ruler",
+                    color: "warning"
+                }
+            ];
+            
+            // Add insights to DOM
+            insights.forEach(insight => {
+                const insightEl = document.createElement('div');
+                insightEl.className = 'insight-card';
+                insightEl.innerHTML = `
+                    <h5><i class="${insight.icon} me-2 text-${insight.color}"></i> ${insight.title}</h5>
+                    <p class="mb-0">${insight.content}</p>
+                `;
+                insightsContainer.appendChild(insightEl);
+            });
+        }
+
+        // Function to export insights to scheduler
+        function exportToScheduler() {
+            // This would typically send data back to the scheduler
+            // For this demo, we'll just show a notification
+            showNotification("Insights applied to Content Scheduler successfully!");
+            
+            // In a real implementation, you might:
+            // 1. Save optimal posting times to localStorage
+            // 2. Update the scheduler with recommended content strategies
+            // 3. Apply sentiment-based recommendations
+            
+            // Example: Save optimal posting time to localStorage
+            const schedulerSettings = {
+                optimalPostingTime: "9:00 AM - 12:00 PM",
+                highEngagementDays: ["Tuesday", "Wednesday", "Thursday"],
+                recommendedContentStrategy: "Focus on positive messaging with 120-160 character posts"
+            };
+            
+            localStorage.setItem('schedulerSettings', JSON.stringify(schedulerSettings));
+        }
+
+        // NEW: Function to navigate between app sections
+        function navigateTo(page) {
+            // In a real implementation, this would navigate to the specified page
+            // For this demo, we'll just show a notification
+            showNotification(`Navigating to ${page}`, 'info');
+        }
+
+        // NEW: App navigation styling
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                .app-nav {
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    background: white;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                
+                .app-nav-list {
+                    display: flex;
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    justify-content: center;
+                }
+                
+                .app-nav-item {
+                    padding: 10px 20px;
+                    margin: 0 5px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    color: var(--gray);
+                }
+                
+                .app-nav-item:hover {
+                    background: rgba(90, 114, 71, 0.1);
+                    color: var(--primary);
+                }
+                
+                .app-nav-item.active {
+                    background: var(--primary);
+                    color: white;
+                }
+            </style>
+        `);
+
+        // Initialize the dashboard
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load data from scheduler by default
+    loadSchedulerData();
+
+    // Set up listeners for real-time updates
+    setupSchedulerListeners();
+    
+    // Initialize navbar functionality
+    initNavbar();
+
+    // Load user profile data
+    loadUserProfile();
+
+    updateUserProfile();
+});
+
+// Initialize navbar functionality
+function initNavbar() {
+    // Toggle notification dropdown
+    const notifBtn = document.getElementById('notif-btn');
+    if (notifBtn) {
+        notifBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('notif-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        });
+    }
+
+    // Toggle profile menu
+    const profileMenuBtn = document.getElementById('profile-menu-btn');
+    if (profileMenuBtn) {
+        profileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('profile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        });
+    }
+
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('show');
+        });
+    }
+
+    const closeMobileMenu = document.getElementById('close-mobile-menu');
+    if (closeMobileMenu) {
+        closeMobileMenu.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.remove('show');
+        });
+    }
+
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const mobileDarkModeToggle = document.getElementById('mobile-dark-mode-toggle');
+        if (darkModeToggle) darkModeToggle.classList.add('active');
+        if (mobileDarkModeToggle) mobileDarkModeToggle.classList.add('active');
+    }
+}
+
+// Close dropdowns when clicking elsewhere
+document.addEventListener('click', function() {
+    const notifDropdown = document.getElementById('notif-dropdown');
+    const profileMenu = document.getElementById('profile-menu');
+    
+    if (notifDropdown) notifDropdown.classList.add('hidden');
+    if (profileMenu) profileMenu.classList.add('hidden');
+});
+
+// Dark mode toggle
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const mobileDarkModeToggle = document.getElementById('mobile-dark-mode-toggle');
+    
+    body.classList.toggle('dark-mode');
+    if (darkModeToggle) darkModeToggle.classList.toggle('active');
+    if (mobileDarkModeToggle) mobileDarkModeToggle.classList.toggle('active');
+    
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+}
+
+// Mark all notifications as read
+function markAllNotificationsAsRead() {
+    const notifBadge = document.getElementById('notif-badge');
+    if (notifBadge) {
+        notifBadge.textContent = '0';
+        notifBadge.style.display = 'none';
+    }
+    showToast('All notifications marked as read');
+}
+
+// Show toast notification
+function showToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-md z-50';
+    toast.textContent = message;
+    
+    // Add to document
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Open profile modal
+function openProfileModal() {
+    // Populate with current data
+    const userName = localStorage.getItem('userName') || 'User';
+    const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+    const userProfileImg = localStorage.getItem('userProfileImg') || 'https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff';
+    
+    document.getElementById('profile-name-input').value = userName;
+    document.getElementById('profile-email-input').value = userEmail;
+    document.getElementById('profile-preview').src = userProfileImg;
+    
+    document.getElementById('profile-modal').classList.remove('hidden');
+}
+
+// Close profile modal
+function closeProfileModal() {
+    document.getElementById('profile-modal').classList.add('hidden');
+}
+
+// Open settings modal
+function openSettingsModal() {
+    // Sync dark mode toggle state
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    const settingsToggle = document.getElementById('settings-dark-mode-toggle');
+    
+    if (isDarkMode) {
+        settingsToggle.classList.add('active');
+    } else {
+        settingsToggle.classList.remove('active');
+    }
+    
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+
+// Close settings modal
+function closeSettingsModal() {
+    document.getElementById('settings-modal').classList.add('hidden');
+    showNotification('Settings saved successfully!');
+}
+
+
+    // Logout function
+    function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear user data from localStorage
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userProfileImg');
+        
+        // Reset to guest avatar
+        document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=US&background=8B5A2B&color=fff';
+        
+        // Reload the profile to show guest state
+        loadUserProfile();
+        
+        // Show logout message
+        showNotification('You have been logged out');
+        
+        // Redirect to login page
+        window.location.href = 'login.html';
+    }
+}
+
+// Function to set active navigation link
+function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const navLinks = document.querySelectorAll('.hidden.md\\:flex a');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('text-[var(--primary-brown)]', 'font-medium', 'border-b-2', 'border-[var(--primary-brown)]');
+        const linkPage = link.getAttribute('href');
+        
+        if (linkPage === currentPage) {
+            link.classList.add('text-[var(--primary-brown)]', 'font-medium', 'border-b-2', 'border-[var(--primary-brown)]');
+        }
+    });
+}
+
+// Update the initNavbar function to include setActiveNavLink
+function initNavbar() {
+    // Set active navigation link
+    setActiveNavLink();
+    
+    // Toggle notification dropdown
+    const notifBtn = document.getElementById('notif-btn');
+    if (notifBtn) {
+        notifBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('notif-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        });
+    }
+
+    // Toggle profile menu
+    const profileMenuBtn = document.getElementById('profile-menu-btn');
+    if (profileMenuBtn) {
+        profileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('profile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        });
+    }
+
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('show');
+        });
+    }
+
+    const closeMobileMenu = document.getElementById('close-mobile-menu');
+    if (closeMobileMenu) {
+        closeMobileMenu.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.remove('show');
+        });
+    }
+
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const mobileDarkModeToggle = document.getElementById('mobile-dark-mode-toggle');
+        if (darkModeToggle) darkModeToggle.classList.add('active');
+        if (mobileDarkModeToggle) mobileDarkModeToggle.classList.add('active');
+    }
+}
+
+function loadUserProfile() {
+    // First try to get data from currentUser object
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser && currentUser.name) {
+        // User is logged in with new format
+        document.getElementById('profile-name').textContent = currentUser.name;
+        
+        // Update profile image if available
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        } else if (profileImgElement) {
+            // Generate initials from user name
+            const initials = getInitials(currentUser.name);
+            profileImgElement.src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+        }
+        
+        // Update profile menu for logged in user
+        const profileMenu = document.getElementById('profile-menu');
+        if (profileMenu) {
+            profileMenu.innerHTML = `
+                <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+            `;
+        }
+    } else {
+        // Fallback to old format or show guest user
+        const userEmail = localStorage.getItem('userEmail');
+        const userName = localStorage.getItem('userName');
+        
+        if (userName) {
+            // User is logged in with old format - USE THE USERNAME, NOT EMAIL
+            document.getElementById('profile-name').textContent = userName;
+            
+            // Generate initials from user name
+            const initials = getInitials(userName);
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+            
+            // Update profile menu for logged in user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+                `;
+            }
+        } else {
+            // User not logged in, show guest state
+            document.getElementById('profile-name').textContent = 'Guest';
+            document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=GU&background=8B5A2B&color=fff';
+            
+            // Update profile menu for guest user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="login()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Login</button>
+                    <button onclick="signup()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Sign Up</button>
+                `;
+            }
+        }
+    }
+}
+
+// Helper function to get initials from a name
+function getInitials(name) {
+    if (!name) return 'GU';
+    
+    return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .join('')
+        .substring(0, 2); // Get first 2 letters max
+}
+
+// Redirect to login page
+function login() {
+    window.location.href = 'login.html';
+}
+
+// Redirect to signup page
+function signup() {
+    window.location.href = 'signup.html'; // Update with your actual signup page URL
+}
+
+// Profile form submission
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('profile-name-input').value;
+    const email = document.getElementById('profile-email-input').value;
+    
+    // Update profile
+    document.getElementById('profile-name').textContent = name;
+    localStorage.setItem('userName', name);
+    localStorage.setItem('currentUser', JSON.stringify({
+    email: email,
+    name: user.name 
+}));
+
+    
+
+    // In your signup success handler:
+    localStorage.setItem('currentUser', JSON.stringify({
+    email: email,
+    name: name 
+}));
+    
+    // Update avatar with new initials
+    const initials = getInitials(name);
+    document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    document.getElementById('profile-preview').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    
+    closeProfileModal();
+    showNotification('Profile updated successfully!');
+});
+
+// Profile image upload
+document.getElementById('profile-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            // Update both preview and main profile image
+            document.getElementById('profile-preview').src = event.target.result;
+            document.getElementById('profile-img').src = event.target.result;
+            
+            // Store the custom image in localStorage
+            localStorage.setItem('userProfileImg', event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
+// Add this function to your content generator page
+function updateUserProfile() {
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser) {
+        // Update profile name if element exists
+        const profileNameElement = document.getElementById('profile-name');
+        if (profileNameElement && currentUser.name) {
+            profileNameElement.textContent = currentUser.name;
+        }
+        
+        // Update profile image if element exists
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        }
+        
+        // Show user profile, hide login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.style.display = 'flex';
+        if (loginButton) loginButton.style.display = 'none';
+        if (signupButton) signupButton.style.display = 'none';
+        if (notificationIcons) notificationIcons.style.display = 'flex';
+        if (reminderIcons) reminderIcons.style.display = 'flex';
+    } else {
+        // User not logged in, show login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.style.display = 'none';
+        if (loginButton) loginButton.style.display = 'flex';
+        if (signupButton) signupButton.style.display = 'flex';
+        if (notificationIcons) notificationIcons.style.display = 'none';
+        if (reminderIcons) reminderIcons.style.display = 'none';
+    }
+}
+
+
+
+
+
+    </script>
+
+<!-- Profile Modal -->
+<div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+        
+        <form id="profile-form">
+            <div class="flex flex-col items-center mb-6">
+                <div class="relative mb-4">
+                    <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" 
+                         alt="Profile" class="w-24 h-24 rounded-full object-cover" id="profile-preview">
+                    <label for="profile-upload" class="absolute bottom-0 right-0 bg-[var(--primary-brown)] text-white p-2 rounded-full cursor-pointer">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="profile-upload" class="hidden" accept="image/*">
+                </div>
+                <p class="text-gray-600">Click camera icon to change photo</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-name">Full Name</label>
+                <input type="text" id="profile-name-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="User" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-email">Email</label>
+                <input type="email" id="profile-email-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="user@example.com" required>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <button type="button" onclick="closeProfileModal()" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold">Cancel</button>
+                <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Settings</h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="font-bold mb-4">Appearance</h3>
+                <div class="flex items-center justify-between">
+                    <span>Dark Mode</span>
+                    <div id="settings-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold mb-4">Notifications</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span>Email Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Push Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button onclick="closeSettingsModal()" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

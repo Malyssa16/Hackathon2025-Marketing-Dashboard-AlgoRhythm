@@ -1,0 +1,2939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GrowthOps: AI Content Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- Flatpickr (left in, harmless; used on scheduler page) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    /* Updated color variables with cohesive brown theme */
+    :root{ 
+      --primary-brown: #9C7C5B;    /* Warm medium brown */
+      --light-brown: #C8B6A6;      /* Light warm brown */
+      --dark-brown: #6D4C3D;       /* Dark warm brown */
+      --primary-green: #7A9D7E;
+      --light-green: #9BB99A;
+      --dark-green: #5A7D5C;
+      --cream: #F8F6F0;
+      --text-dark: #2D4A3B;
+      --text-medium: #5D6D7E;
+      --text-light: #85929E;
+      --bg-light: #f7fafc;
+    }
+    
+    body {
+      background-color: var(--cream);
+      color: var(--text-dark);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Dark Mode Styles - UPDATED with blue-black background */
+    body.dark-mode {
+      background-color: #1E2A3A; /* Blue-black background - not too dark */
+      color: #E9ECEF; /* Light text for contrast */
+    }
+    /* Add these to your existing dark mode styles */
+.dark-mode .content-item,
+.dark-mode .clipboard-item,
+.dark-mode .clipboard-history-panel {
+  background-color: #2A3A4D; /* Dark blue-gray */
+  color: #E9ECEF; /* Light text */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Specifically target the content cards in dark mode */
+.dark-mode .p-4.rounded-xl.border.bg-white {
+  background-color: #2A3A4D !important;
+  color: #E9ECEF !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ensure text in content cards is visible in dark mode */
+.dark-mode .p-4.rounded-xl.border.bg-white p,
+.dark-mode .p-4.rounded-xl.border.bg-white .whitespace-pre-wrap {
+  color: #E9ECEF !important;
+}
+
+/* Fix tag colors in dark mode */
+.dark-mode .tag {
+  background: #4A5C6E;
+  color: #E9ECEF;
+}
+
+/* Fix text colors in performance prediction cards */
+.dark-mode .p-4.rounded-xl.border.bg-white .text-indigo-600,
+.dark-mode .p-4.rounded-xl.border.bg-white .text-slate-500 {
+  color: #A0AEC0 !important;
+}
+/* Fix notification and profile elements in dark mode */
+.dark-mode .notification-icon i,
+.dark-mode #profile-name,
+.dark-mode #profile-menu-btn i {
+  color: #E9ECEF !important; /* Light text color for dark mode */
+}
+
+.dark-mode .user-profile span,
+.dark-mode .flex.items-center.mr-4 span {
+  color: #E9ECEF !important;
+}
+
+/* Fix notification dropdown in dark mode */
+.dark-mode #notif-dropdown {
+  background: #2A3A4D; /* Dark blue-gray */
+  color: #E9ECEF; /* Light text */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .notification-item {
+  color: #E9ECEF; /* Light text */
+}
+
+.dark-mode .notification-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .notification-item .text-gray-500 {
+  color: #A0AEC0 !important; /* Lighter gray for timestamps */
+}
+
+/* Fix profile dropdown in dark mode */
+.dark-mode #profile-menu {
+  background: #2A3A4D; /* Dark blue-gray */
+  color: #E9ECEF; /* Light text */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode #profile-menu button {
+  color: #E9ECEF; /* Light text */
+}
+
+.dark-mode #profile-menu button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix mobile menu button in dark mode */
+.dark-mode #mobile-menu-button {
+  color: #E9ECEF !important;
+}
+
+    .dark-mode .navbar {
+      background: rgba(39, 55, 77, 0.95); /* Dark blue background */
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .glass {
+      background: rgba(255, 255, 255, 0.12); /* Semi-transparent white */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .content-item,
+    .dark-mode .clipboard-item,
+    .dark-mode .clipboard-history-panel {
+      background-color: #2A3A4D; /* Dark blue-gray */
+      color: #E9ECEF; /* Light text */
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dark-mode select, 
+    .dark-mode input, 
+    .dark-mode textarea {
+      background-color: #2A3A4D; /* Dark blue-gray */
+      border-color: #4A5C6E;
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .content-type-btn {
+      background: #2A3A4D;
+      border-color: #4A5C6E;
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .content-type-btn.active {
+      background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+      color: white;
+    }
+
+    .dark-mode .tag {
+      background: #4A5C6E;
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .clipboard-header {
+      border-bottom-color: #4A5C6E;
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .text-slate-500 {
+      color: #A0AEC0;
+    }
+
+    .dark-mode .send-to-scheduler-btn {
+      background: var(--primary-green);
+      color: white;
+    }
+
+    .dark-mode .delete-clipboard-item {
+      background: #742a2a;
+      color: #fed7d7;
+    }
+
+    .dark-mode .delete-clipboard-item:hover {
+      background: #9b2c2c;
+    }
+
+    .dark-mode #cgLoading {
+      background: rgba(102, 126, 234, 0.2);
+      color: #a3bffa;
+    }
+
+    .dark-mode #cgError {
+      background: rgba(254, 215, 215, 0.2);
+      color: #fc8181;
+    }
+
+    .dark-mode #cgPerf {
+      background: rgba(226, 232, 240, 0.1);
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .btn-gradient {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .dark-mode .btn-gradient:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Additional dark mode styles for other elements */
+    .dark-mode .card,
+    .dark-mode .insight-card {
+      background: rgba(42, 58, 77, 0.9) !important; /* Dark blue-gray */
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .app-nav {
+      background: rgba(42, 58, 77, 0.7); /* Dark blue-gray */
+    }
+
+    .dark-mode .app-nav-item {
+      color: #E9ECEF; /* Light text */
+    }
+
+    .dark-mode .app-nav-item:hover {
+      background: rgba(156, 124, 91, 0.15); /* Primary brown tint */
+      color: var(--primary-brown);
+    }
+
+    .dark-mode .content-title {
+      color: var(--primary-brown);
+    }
+
+    /* Dark mode toggle styles */
+    .dark-mode-toggle {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: #ccc;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .dark-mode-toggle.active {
+      background: var(--primary-brown);
+    }
+
+    .dark-mode-toggle::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+
+    .dark-mode-toggle.active::after {
+      transform: translateX(24px);
+    }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 1rem;
+    }
+    
+    .gradient {
+      background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+    }
+    
+    .gradient-green {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: .25rem .6rem;
+      border-radius: 9999px;
+      font-size: .75rem;
+      font-weight: 600;
+      background: #edf2f7; 
+      color: var(--text-dark);
+    }
+    
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .content-type-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      background: #edf2f7;
+      color: var(--text-dark);
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid rgba(139, 90, 43, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .content-type-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .content-type-btn.active {
+      background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+      color: white;
+      border-color: transparent;
+    }
+    
+    /* New styles for content tabs */
+    .content-tab { 
+      display: none; 
+    }
+    
+    .content-tab.active { 
+      display: block; 
+    }
+    
+    .content-type-tab-btn { 
+      padding: 0.5rem 1rem; 
+      border-radius: 0.5rem; 
+      background: #edf2f7; 
+      color: var(--text-dark);
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid rgba(139, 90, 43, 0.1);
+    }
+    
+    .content-type-tab-btn.active { 
+      background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+      color: white;
+      border-color: transparent;
+    }
+    
+    /* Updated clipboard styles for better visibility */
+    .clipboard-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-brown);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideIn 0.3s ease-out;
+}
+    
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* Adjust clipboard toggle position and styling */
+    .clipboard-toggle {
+      position: fixed;
+      top: 80px; /* Position below navbar */
+      right: 20px;
+      background: white;
+      width: 50px; /* Increased size */
+      height: 50px; /* Increased size */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      transition: all 0.3s ease;
+      border: 2px solid var(--primary-brown);
+    }
+
+    .clipboard-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(139, 90, 43, 0.3);
+      background: var(--cream);
+    }
+
+    .clipboard-toggle i {
+      color: var(--primary-brown); /* Brown icon color */
+      font-size: 1.4rem; /* Larger icon */
+    }
+
+    /* Adjust panel position */
+    .clipboard-history-panel {
+      position: fixed;
+      top: 140px; /* Position below the toggle button */
+      right: 20px;
+      width: 340px; /* Slightly wider */
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 999;
+      padding: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+      color: var(--text-dark);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .clipboard-item {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-brown);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-dark);
+    }
+    
+    .clipboard-item:hover {
+      background: #eef2ff;
+      transform: translateY(-2px);
+    }
+    
+    .clipboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      color: var(--text-dark);
+    }
+
+    .delete-clipboard-item {
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #fef2f2;
+      transition: all 0.2s;
+    }
+
+    .delete-clipboard-item:hover {
+      background: #fee2e2;
+    }
+    
+    .send-to-scheduler-btn {
+      background: var(--primary-green);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .send-to-scheduler-btn:hover {
+      background: var(--dark-green);
+      transform: translateY(-2px);
+    }
+    
+    /* Form elements */
+    select, input, textarea {
+      color: var(--text-dark);
+      background: white;
+      border: 1px solid #cbd5e0;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--primary-brown);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1);
+    }
+    
+    /* Content cards */
+    .content-item {
+      background: white;
+      color: var(--text-dark);
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .content-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .content-title {
+      color: var(--primary-brown);
+    }
+    
+    /* Toast notifications */
+    #toast {
+      color: white;
+    }
+    
+    /* Buttons */
+    button {
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Card styling */
+    .card {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+    
+    /* Navigation styles to match login page */
+    .navbar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      padding: 0.75rem 0 !important;
+      height: 60px;
+    }
+      
+      .navbar .max-w-6xl {
+      max-width: 1200px; 
+      margin: 0 auto;
+      padding: 0 1.5rem;
+}
+      .navbar .max-w-6xl {
+      max-width: 1200px; 
+      margin: 0 auto;
+      padding: 0 1.5rem;
+}
+  .navbar .text-xl {
+    font-size: 1.25rem !important; /* Match scheduler logo size */
+    font-weight: 700;
+}
+
+.navbar .hidden.md\:flex.space-x-6 a {
+    font-size: 0.9rem !important; /* Slightly smaller text */
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    border-bottom-width: 2px;
+    border-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.navbar .hidden.md\:flex.space-x-6 a:hover {
+    color: var(--primary-brown);
+    transform: translateY(-1px);
+}
+
+.navbar .hidden.md\:flex.space-x-6 a.text-\[var\(--primary-brown\)\] {
+    border-color: var(--primary-brown);
+}
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--dark-brown) 0%, var(--primary-brown) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(107, 72, 40, 0.2);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(70, 91, 56, 0.2);
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      
+    }
+
+   
+
+  #profile-name {
+    font-size: 0.9rem !important; /* Smaller text for profile name */
+}
+
+    .notification-icon {
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background-color: #e53e3e;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+</style>
+      <style>
+  /* 🔹 Navbar from login page */
+  nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 12px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .dark-mode nav {
+    background: rgba(39, 55, 77, 0.8); /* Dark blue background */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  nav a {
+    margin-left: 20px;
+    font-weight: 500;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  
+  .dark-mode nav a {
+    color: #E9ECEF; /* Light text in dark mode */
+  }
+  
+  nav a:hover {
+    color: var(--primary-brown);
+  }
+  
+  .dark-mode nav a:hover {
+    color: var(--light-brown);
+  }
+
+  /* 🔹 Glassy cards effect */
+  .card, .insight-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  }
+  
+  .dark-mode .card,
+  .dark-mode .insight-card {
+    background: rgba(42, 58, 77, 0.9) !important; /* Dark blue-gray */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  }
+
+  /* 🔹 Gradient button to match login */
+  .btn-primary {
+    background: linear-gradient(to right, var(--primary-brown), var(--dark-brown)) !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    font-weight: 600;
+    padding: 8px 18px;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  /* 🔹 App navigation look (Overview/Insights/Reports) */
+  .app-nav {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .dark-mode .app-nav {
+    background: rgba(42, 58, 77, 0.7); /* Dark blue-gray */
+  }
+  
+  .app-nav-item {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-dark);
+    transition: 0.3s;
+  }
+  
+  .dark-mode .app-nav-item {
+    color: #E9ECEF; /* Light text in dark mode */
+  }
+  
+  .app-nav-item:hover {
+    background: rgba(156, 124, 91, 0.15); /* Primary brown tint */
+    color: var(--primary-brown);
+  }
+  
+  .dark-mode .app-nav-item:hover {
+    background: rgba(156, 124, 91, 0.25); /* Primary brown tint */
+    color: var(--light-brown);
+  }
+  
+  .app-nav-item.active {
+    background: var(--primary-brown);
+    color: white;
+  }
+  
+  /* Enhanced button styles */
+  .content-type-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    color: var(--text-dark);
+    cursor: pointer;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .dark-mode .content-type-btn {
+    background: #2A3A4D; /* Dark blue-gray */
+    color: #E9ECEF; /* Light text */
+    border-color: #4A5C6E;
+  }
+
+  .content-type-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(139, 90, 43, 0.15);
+    border-color: var(--primary-brown);
+  }
+  
+  .dark-mode .content-type-btn:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .content-type-btn.active {
+    background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(139, 90, 43, 0.25);
+  }
+
+  /* Enhanced form elements */
+  select, input, textarea {
+    color: var(--text-dark);
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 0.85rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark-mode select,
+  .dark-mode input,
+  .dark-mode textarea {
+    background: #2A3A4D; /* Dark blue-gray */
+    color: #E9ECEF; /* Light text */
+    border-color: #4A5C6E;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--primary-brown);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark-mode select:focus,
+  .dark-mode input:focus,
+  .dark-mode textarea:focus {
+    box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Enhanced content cards */
+  .content-item {
+    background: white;
+    color: var(--text-dark);
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark-mode .content-item {
+    background: #2A3A4D; /* Dark blue-gray */
+    color: #E9ECEF; /* Light text */
+    border-color: #4A5C6E;
+  }
+
+  .content-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark-mode .content-item:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Improved clipboard items */
+  .clipboard-item {
+    padding: 14px;
+    margin-bottom: 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border-left: 4px solid var(--primary-brown);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-dark);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  }
+  
+  .dark-mode .clipboard-item {
+    background: #2A3A4D; /* Dark blue-gray */
+    color: #E9ECEF; /* Light text */
+  }
+
+  .clipboard-item:hover {
+    background: #f1f5f9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+  
+  .dark-mode .clipboard-item:hover {
+    background: #344256; /* Slightly lighter blue-gray */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Beautiful gradient buttons */
+  .btn-gradient {
+    background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.85rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(139, 90, 43, 0.2);
+  }
+
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(139, 90, 43, 0.25);
+  }
+  
+  .dark-mode .btn-gradient:hover {
+    box-shadow: 0 6px 12px rgba(139, 90, 43, 0.35);
+  }
+
+  /* Subtle animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass {
+    animation: fadeIn 0.5s ease-out;
+  }
+</style>
+</head>
+
+  <body>
+    <nav class="navbar bg-white shadow-sm py-4 px-6">
+  <div class="max-w-6xl mx-auto flex justify-between items-center w-full">
+    <a href="login.html" class="text-xl font-bold text-[var(--primary-brown)] flex items-center">
+      <i class="fa-solid fa-seedling mr-2"></i>GrowthOps
+    </a>
+    
+    <div class="hidden md:flex space-x-6">
+  <a href="login.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors uppercase">Home</a>
+  <a href="index.html" class="text-[var(--primary-brown)] font-medium border-b-2 border-[var(--primary-brown)] transition-colors uppercase">AI Content Generator</a>
+  <a href="scheduler.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors uppercase">Smart Scheduler</a>
+  <a href="sentiment_dashboard.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors uppercase">Performance Analytics</a>
+</div>
+    
+    <div class="flex items-center space-x-4">
+      <!-- Notification icons -->
+      <div class="relative" id="notification-icons">
+        <button id="notif-btn" class="relative px-2">
+          <i class="fas fa-bell text-gray-700 text-xl"></i>
+          <span class="notification-badge" id="notif-badge">3</span>
+        </button>
+        <div id="notif-dropdown" class="hidden absolute right-0 mt-3 bg-white rounded-xl shadow-lg p-4 z-50 w-72">
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="font-bold">Notifications</h4>
+            <button class="text-xs text-[var(--primary-brown)] hover:underline" onclick="markAllNotificationsAsRead()">Mark all as read</button>
+          </div>
+          <ul class="text-sm space-y-2">
+            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Post scheduling opened')">
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-[var(--primary-green)] mr-2 mt-1"></i>
+                <div>
+                  <p class="font-medium">3 posts scheduled for today</p>
+                  <p class="text-gray-500 text-xs">2 hours ago</p>
+                </div>
+              </div>
+            </li>
+            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Analytics dashboard opened')">
+              <div class="flex items-start">
+                <i class="fas fa-chart-line text-[var(--primary-brown)] mr-2 mt-1"></i>
+                <div>
+                  <p class="font-medium">Your engagement increased by 12% this week</p>
+                  <p class="text-gray-500 text-xs">5 hours ago</p>
+                </div>
+              </div>
+            </li>
+            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('New features shown')">
+              <div class="flex items-start">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                <div>
+                  <p class="font-medium">New AI feature available</p>
+                  <p class="text-gray-500 text-xs">1 day ago</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      
+      <!-- User profile -->
+      <div class="user-profile relative" id="user-profile">
+      <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" alt="Guest" class="profile-img mr-2" id="profile-img">
+      <span id="profile-name" class="text-gray-700" style="text-transform: uppercase;">User</span>
+      <button id="profile-menu-btn" class="ml-2 text-gray-600"><i class="fas fa-caret-down"></i></button>
+      <div id="profile-menu" class="absolute right-0 mt-2 bg-white rounded-xl shadow-lg p-2 hidden z-50" style="min-width:150px;">
+    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+</div>
+
+      <!-- Dark Mode Toggle -->
+    <div class="flex items-center mr-4">
+    <span class="text-sm text-gray-600 mr-2 hidden md:inline">Dark</span>
+    <div id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+    </div>
+      
+      <div class="md:hidden ml-4">
+        <button id="mobile-menu-button" class="text-gray-700">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+</body>
+
+  <!-- Clipboard toggle button -->
+  <div class="clipboard-toggle" id="clipboardToggle">
+    <i class="fa-solid fa-clipboard"></i>
+  </div>
+
+  <!-- Clipboard history panel -->
+  <div class="clipboard-history-panel hidden" id="clipboardHistoryPanel">
+    <div class="clipboard-header">
+      <h3 class="font-bold">Recently Copied Content</h3>
+      <span class="text-xs text-slate-500" id="clipboardCount">0 items</span>
+    </div>
+    <div id="clipboardItems">
+      <!-- Clipboard items will be added here -->
+    </div>
+    <button id="sendAllToScheduler" class="send-to-scheduler-btn w-full mt-3 justify-center hidden">
+      <i class="fa-solid fa-paper-plane"></i> Send All to Scheduler
+    </button>
+  </div>
+  
+      
+      <div class="md:hidden ml-4">
+        <button id="mobile-menu-button" class="text-gray-700">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+
+    
+  </nav>
+  
+  <!-- Mobile Menu -->
+<div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center space-y-8 transform translate-x-full transition-transform duration-300 dark:bg-gray-900">
+  <button id="close-mobile-menu" class="absolute top-6 right-6 text-2xl text-gray-700 dark:text-gray-300">
+      <i class="fas fa-times"></i>
+  </button>
+  
+  <a href="login.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">Home</a>
+  <a href="index.html" class="text-2xl font-medium text-[var(--primary-brown)] uppercase">AI Content Generator</a>
+  <a href="scheduler.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300 uppercase">Smart Scheduler</a>
+  <a href="sentiment_dashboard.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300 uppercase">Performance Analytics</a>
+  
+  <div class="flex space-x-4 mt-8">
+      <button onclick="logout()" class="px-6 py-3 rounded-lg border border-[var(--primary-brown)] text-[var(--primary-brown)] dark:border-[var(--light-brown)] dark:text-[var(--light-brown)]">Logout</button>
+  </div>
+  
+  <!-- Add dark mode toggle to mobile menu -->
+  <div class="flex items-center mt-8">
+      <span class="text-lg text-gray-700 dark:text-gray-300 mr-4">Dark Mode</span>
+      <div id="mobile-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+  </div>
+</div>
+
+  <!-- Hero Section -->
+<section class="bg-gradient-to-r from-[var(--primary-brown)] to-[var(--dark-brown)] text-white py-8">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold mb-2 uppercase">AI Content Generator</h1>
+        <p class="opacity-90">Create engaging content in seconds with AI-powered suggestions</p>
+      </div>
+      <div class="mt-4 md:mt-0 flex items-center">
+        <div class="bg-white/20 rounded-full p-3 mr-3">
+          <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-sm">Powered by</p>
+          <p class="font-semibold">Gemini 1.5 Flash</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Main content with padding to account for fixed navbar -->
+  <main class="max-w-6xl mx-auto px-6 py-6 space-y-6">
+
+    <!-- -------- UNIFIED CONTENT GENERATOR -------- -->
+    <section id="panelIdeas" class="glass rounded-2xl p-6 card shadow-lg mt-6">
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+    <h1 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-wand-magic-sparkles mr-3 text-[var(--primary-brown)]"></i>Content Creation Studio</h1>
+    <span class="tag bg-[var(--primary-brown)] text-white">Gemini 1.5 Flash</span>
+  </div>
+
+
+      <div class="mb-6">
+        <h3 class="text-lg font-medium mb-3">What would you like to create?</h3>
+        <div class="flex flex-wrap gap-2">
+          <button data-type="caption" class="content-type-btn active">
+            <i class="fa-solid fa-quote-left mr-2"></i>Social Caption
+          </button>
+          <button data-type="video" class="content-type-btn">
+            <i class="fa-solid fa-video mr-2"></i>Video Ideas
+          </button>
+          <button data-type="music" class="content-type-btn">
+            <i class="fa-solid fa-music mr-2"></i>Music Suggestions
+          </button>
+          <button data-type="strategy" class="content-type-btn">
+            <i class="fa-solid fa-chess mr-2"></i>Content Strategy
+          </button>
+          <button data-type="custom" class="content-type-btn">
+            <i class="fa-solid fa-star mr-2"></i>Custom Request
+          </button>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div id="caption-options">
+            <div>
+              <label class="text-sm font-medium">Your Idea / Topic</label>
+              <textarea id="cgIdea" class="w-full mt-1 p-3 rounded-xl border-2 focus:outline-none focus:border-[var(--primary-brown)]" rows="3" placeholder="e.g., Summer launch for eco water bottles, coffee shop rebrand, fintech productivity tips..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-sm font-medium">Tone</label>
+                <select id="cgTone" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Professional</option><option>Casual</option><option>Inspirational</option>
+                  <option>Funny</option><option>Urgent</option><option>Educational</option>
+                  <option>Conversational</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium">Style</label>
+                <select id="cgStyle" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Storytelling</option><option>Informative</option><option>Persuasive</option>
+                  <option>Minimal</option><option>Trendy Buzz</option><option>Question-based</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-sm font-medium">Audience</label>
+                <select id="cgAudience" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Teens</option><option>Young Adults</option><option>Professionals</option>
+                  <option>Parents</option><option>Entrepreneurs</option><option>Seniors</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium">Content Type</label>
+                <select id="cgType" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Instagram Caption</option><option>Facebook Post</option><option>Tweet</option>
+                  <option>LinkedIn Post</option><option>TikTok Caption</option><option>Blog Title</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="video-options" class="hidden">
+            <div>
+              <label class="text-sm font-medium">Video Topic/Concept</label>
+              <textarea id="videoIdea" class="w-full mt-1 p-3 rounded-xl border-2 focus:outline-none focus:border-[var(--primary-brown)]" rows="3" placeholder="e.g., Product demo for new smartwatch, tutorial on baking sourdough, behind-the-scenes of our startup..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-sm font-medium">Video Style</label>
+                <select id="videoStyle" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Tutorial/How-to</option><option>Behind the Scenes</option><option>Product Demo</option>
+                  <option>Vlog</option><option>Interview</option><option>Animation</option>
+                  <option>Testimonial</option><option>Educational</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium">Platform</label>
+                <select id="videoPlatform" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>YouTube</option><option>TikTok</option><option>Instagram Reels</option>
+                  <option>Facebook</option><option>LinkedIn</option><option>Twitter</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <label class="text-sm font-medium">Video Length</label>
+              <select id="videoLength" class="w-full mt-1 p-3 rounded-xl border-2">
+                <option value="">Select</option>
+                <option>Short (15-30 seconds)</option>
+                <option>Medium (1-2 minutes)</option>
+                <option>Long (3+ minutes)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="music-options" class="hidden">
+            <div>
+              <label class="text-sm font-medium">Content Type</label>
+              <textarea id="musicIdea" class="w-full mt-1 p-3 rounded-xl border-2 focus:outline-none focus:border-[var(--primary-brown)]" rows="3" placeholder="e.g., Travel vlog in Japan, workout video, romantic dinner recipe, tech product unboxing..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-sm font-medium">Mood/Energy</label>
+                <select id="musicMood" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Energetic/Upbeat</option><option>Calm/Relaxing</option><option>Emotional/Dramatic</option>
+                  <option>Fun/Playful</option><option>Inspirational</option><option>Corporate/Professional</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium">Genre Preference</label>
+                <select id="musicGenre" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Pop</option><option>Rock</option><option>Hip-Hop</option>
+                  <option>Electronic</option><option>Jazz</option><option>Classical</option>
+                  <option>Indie</option><option>No Preference</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="strategy-options" class="hidden">
+            <div>
+              <label class="text-sm font-medium">Your Brand/Product</label>
+              <textarea id="strategyIdea" class="w-full mt-1 p-3 rounded-xl border-2 focus:outline-none focus:border-[var(--primary-brown)]" rows="3" placeholder="e.g., Sustainable fashion brand, productivity app for students, local coffee shop..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div>
+                <label class="text-sm font-medium">Primary Goal</label>
+                <select id="strategyGoal" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Brand Awareness</option><option>Lead Generation</option><option>Sales/Conversion</option>
+                  <option>Community Building</option><option>Customer Education</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-medium">Platform Focus</label>
+                <select id="strategyPlatform" class="w-full mt-1 p-3 rounded-xl border-2">
+                  <option value="">Select</option>
+                  <option>Instagram</option><option>Facebook</option><option>TikTok</option>
+                  <option>YouTube</option><option>LinkedIn</option><option>Twitter</option>
+                  <option>Multiple Platforms</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="custom-options" class="hidden">
+            <div>
+              <label class="text-sm font-medium">Your Custom Request</label>
+              <textarea id="customIdea" class="w-full mt-1 p-3 rounded-xl border-2 focus:outline-none focus:border-[var(--primary-brown)]" rows="5" placeholder="e.g., Suggest background music for a travel vlog about Japan, Create a script for a 30-second product demo video, Generate ideas for engaging TikTok transitions..."></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 mt-6">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">Response Length</span>
+              <select id="cgVariations" class="p-2 rounded-lg border-2">
+                <option>Short</option><option selected>Medium</option><option>Long</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2 ml-auto">
+              <span class="text-sm">Creativity</span>
+              <input id="cgTemp" type="range" min="0.5" max="1.5" step="0.1" value="1.0">
+              <span id="cgTempLabel" class="text-sm font-medium">Balanced</span>
+            </div>
+          </div>
+
+          <button id="cgBtn" class="btn-gradient w-full mt-4 py-4 text-lg flex items-center justify-center">
+          <i class="fa-solid fa-sparkles mr-2"></i>Generate Amazing Content
+          </button>
+          <button id="clearAllBtn" class="px-5 py-3 rounded-xl bg-gray-500 text-white font-semibold hover:opacity-90 w-full mt-2">
+            <i class="fa-solid fa-trash mr-2"></i>Clear All Content
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Content type tabs for switching between generated content -->
+          <div id="content-type-tabs" class="flex flex-wrap" style="display: none;">
+            <!-- Tabs will be dynamically added here -->
+          </div>
+          
+          <div id="cgLoading" class="hidden flex items-center gap-3 p-4 rounded-xl bg-indigo-50 text-indigo-700">
+            <i class="fa-solid fa-spinner spin"></i><span>Generating…</span>
+          </div>
+          <div id="cgError" class="hidden p-4 rounded-xl bg-red-50 text-red-700"></div>
+          
+          <!-- Container for all generated content, organized by type -->
+          <div id="all-generated-content">
+            <!-- Content for each type will be stored in these containers -->
+            <div id="caption-content" class="content-tab active">
+              <div id="caption-results" class="grid gap-4"></div>
+              <div id="cgPerf" class="hidden p-4 rounded-xl bg-slate-50">
+                <div class="font-semibold mb-2"><i class="fa-solid fa-chart-line mr-2 text-[var(--primary-brown)]"></i>Performance Predictions</div>
+                <div id="cgPerfGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+              </div>
+            </div>
+            <div id="video-content" class="content-tab">
+              <div id="video-results" class="grid gap-4"></div>
+            </div>
+            <div id="music-content" class="content-tab">
+              <div id="music-results" class="grid gap-4"></div>
+            </div>
+            <div id="strategy-content" class="content-tab">
+              <div id="strategy-results" class="grid gap-4"></div>
+            </div>
+            <div id="custom-content" class="content-tab">
+              <div id="custom-results" class="grid gap-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Mobile menu functionality
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+      document.getElementById('mobile-menu').classList.remove('translate-x-full');
+    });
+    
+    document.getElementById('close-mobile-menu').addEventListener('click', function() {
+      document.getElementById('mobile-menu').classList.add('translate-x-full');
+    });
+    
+    // Simple logout function
+    function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear user data from localStorage
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userProfileImg');
+        
+        // Reset to guest avatar
+        document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=US&background=8B5A2B&color=fff';
+        
+        // Reload the profile to show guest state
+        loadUserProfile();
+        
+        // Show logout message
+        showToast('You have been logged out');
+
+        // Redirect to login page
+        window.location.href = 'login.html';
+    }
+}
+
+    // Helper function to get initials from a name
+    function getInitials(name) {
+    if (!name) return 'GU';
+    
+    return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .join('')
+        .substring(0, 2); // Get first 2 letters max
+}
+    
+    // ================== CLIPBOARD CAPTURE SYSTEM ==================
+let clipboardHistory = JSON.parse(localStorage.getItem('clipboardCaptureHistory') || '[]');
+let lastCopiedContent = '';
+
+// Initialize clipboard functionality
+function initClipboard() {
+    // Load existing clipboard history
+    updateClipboardUI();
+    
+    // Set up clipboard monitoring
+    setupClipboardMonitoring();
+    
+    // Set up clipboard toggle
+    const clipboardToggle = document.getElementById('clipboardToggle');
+    const clipboardPanel = document.getElementById('clipboardHistoryPanel');
+    
+    if (clipboardToggle && clipboardPanel) {
+        clipboardToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clipboardPanel.classList.toggle('hidden');
+        });
+    }
+    
+    // Send all to scheduler button
+    const sendAllButton = document.getElementById('sendAllToScheduler');
+    if (sendAllButton) {
+        sendAllButton.addEventListener('click', () => {
+            if (clipboardHistory.length > 0) {
+                // Combine all content with proper formatting
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                const allContent = clipboardHistory.map(item => {
+                    const itemTime = new Date(item.timestamp);
+                    const itemTimeString = itemTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return `[From ${item.source} at ${itemTimeString}]\n${item.content}`;
+                }).join('\n\n');
+                
+                const meta = { 
+                    type: 'Multiple Clipboard Items', 
+                    source: 'Clipboard History',
+                    createdAt: now.toISOString() 
+                };
+                
+                localStorage.setItem('generatedContent', allContent);
+                localStorage.setItem('generatedMeta', JSON.stringify(meta));
+                
+                showClipboardToast('All content sent to scheduler!');
+            }
+        });
+    }
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+        if (clipboardPanel && !clipboardPanel.classList.contains('hidden')) {
+            if (!clipboardPanel.contains(e.target) && e.target !== clipboardToggle) {
+                clipboardPanel.classList.add('hidden');
+            }
+        }
+    });
+    
+    // Set up copy button event delegation
+    setupCopyButtonDelegation();
+}
+
+// Set up event delegation for copy buttons
+function setupCopyButtonDelegation() {
+    document.addEventListener('click', function(e) {
+        // Handle copy buttons
+        if (e.target.closest('.copy')) {
+            const button = e.target.closest('.copy');
+            const card = button.closest('.p-4.rounded-xl.border.bg-white');
+            const contentElement = card.querySelector('p') || card.querySelector('.whitespace-pre-wrap');
+            const content = contentElement ? contentElement.textContent : '';
+            
+            if (content) {
+                navigator.clipboard.writeText(content).then(() => {
+                    showToast('Copied!');
+                    
+                    // Determine the source type
+                    let source = 'Generated Content';
+                    const tagElement = card.querySelector('.tag');
+                    if (tagElement) {
+                        source = tagElement.textContent;
+                    }
+                    
+                    // Save to clipboard history
+                    saveToClipboardHistory(content, source);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('Failed to copy content', 'error');
+                });
+            }
+            
+            // Prevent the event from bubbling
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        
+        // Handle use in scheduler buttons
+        if (e.target.closest('.use')) {
+            const button = e.target.closest('.use');
+            const card = button.closest('.p-4.rounded-xl.border.bg-white');
+            const content = card.querySelector('p') ? card.querySelector('p').textContent : 
+                          card.querySelector('.whitespace-pre-wrap') ? card.querySelector('.whitespace-pre-wrap').textContent : '';
+            
+            if (content) {
+                const meta = { 
+                    type: 'Generated Content', 
+                    createdAt: new Date().toISOString() 
+                };
+                localStorage.setItem('generatedContent', content);
+                localStorage.setItem('generatedMeta', JSON.stringify(meta));
+                window.location.href = 'scheduler.html';
+            }
+        }
+        
+        // Handle copy all buttons (for non-caption content)
+        if (e.target.closest('.copyAll')) {
+            const button = e.target.closest('.copyAll');
+            const card = button.closest('.p-4.rounded-xl.border.bg-white');
+            const content = card.querySelector('.whitespace-pre-wrap') ? card.querySelector('.whitespace-pre-wrap').textContent : '';
+            
+            if (content) {
+                navigator.clipboard.writeText(content).then(() => {
+                    showToast('All content copied!');
+                    
+                    // Determine the source type
+                    let source = 'Generated Content';
+                    const tagElement = card.querySelector('.tag');
+                    if (tagElement) {
+                        source = tagElement.textContent;
+                    }
+                    
+                    // Save to clipboard history
+                    saveToClipboardHistory(content, source);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('Failed to copy content', 'error');
+                });
+            }
+            
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    });
+}
+
+// Function to save content to clipboard history
+function saveToClipboardHistory(content, source) {
+    if (!content || content.length < 5) return;
+    
+    // Check if similar content was recently added
+    const similarExists = clipboardHistory.some(item => 
+        item.content.includes(content) || content.includes(item.content)
+    );
+    
+    if (!similarExists) {
+        const newItem = {
+            id: Date.now(),
+            content: content,
+            source: source,
+            timestamp: new Date().toISOString(),
+            type: determineContentType(content)
+        };
+        
+        clipboardHistory.unshift(newItem);
+        
+        // Keep only the last 20 items
+        if (clipboardHistory.length > 20) {
+            clipboardHistory = clipboardHistory.slice(0, 20);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('clipboardCaptureHistory', JSON.stringify(clipboardHistory));
+        
+        // Update UI
+        updateClipboardUI();
+        
+        // Show notification
+        showClipboardToast('Content saved to clipboard history');
+    }
+}
+
+// Function to determine content type based on text
+function determineContentType(content) {
+    if (content.length < 50) return 'short';
+    if (content.length < 200) return 'medium';
+    return 'long';
+}
+
+// Function to show clipboard toast notification
+function showClipboardToast(message) {
+    // Remove existing toast if any
+    const existingToast = document.getElementById('clipboardToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.id = 'clipboardToast';
+    toast.className = 'clipboard-toast';
+    toast.innerHTML = `
+        <i class="fa-solid fa-clipboard-check"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Remove toast after 3 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 3000);
+}
+
+// Function to delete a clipboard item
+function deleteClipboardItem(id) {
+    if (confirm('Are you sure you want to delete this item from your clipboard history?')) {
+        clipboardHistory = clipboardHistory.filter(item => item.id !== id);
+        localStorage.setItem('clipboardCaptureHistory', JSON.stringify(clipboardHistory));
+        updateClipboardUI();
+        showClipboardToast('Item deleted from clipboard');
+    }
+}
+
+// Function to update clipboard UI
+function updateClipboardUI() {
+    const itemsContainer = document.getElementById('clipboardItems');
+    const countElement = document.getElementById('clipboardCount');
+    const sendAllButton = document.getElementById('sendAllToScheduler');
+    
+    if (!itemsContainer || !countElement) return;
+    
+    itemsContainer.innerHTML = '';
+    
+    if (clipboardHistory.length === 0) {
+        itemsContainer.innerHTML = '<p class="text-slate-500 text-center py-4">No copied content yet</p>';
+        countElement.textContent = '0 items';
+        if (sendAllButton) sendAllButton.classList.add('hidden');
+    } else {
+        countElement.textContent = `${clipboardHistory.length} item${clipboardHistory.length !== 1 ? 's' : ''}`;
+        if (sendAllButton) sendAllButton.classList.remove('hidden');
+        
+        clipboardHistory.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'clipboard-item';
+            el.innerHTML = `
+                <div class="text-xs text-slate-500 mb-1">${formatTime(item.timestamp)} • ${item.source}</div>
+                <div class="line-clamp-2">${item.content}</div>
+                <div class="flex justify-between mt-2">
+                    <button class="delete-clipboard-item text-red-500 hover:text-red-700 text-xs" data-id="${item.id}">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                    <button class="send-to-scheduler-btn" data-id="${item.id}">
+                        <i class="fa-solid fa-paper-plane"></i> Send to Scheduler
+                    </button>
+                </div>
+            `;
+            
+            // Add click event to delete button
+            el.querySelector('.delete-clipboard-item').addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                deleteClipboardItem(item.id);
+            });
+            
+            // Add click event to send to scheduler
+            el.querySelector('.send-to-scheduler-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                sendToScheduler(item.content, item.source);
+            });
+            
+            // Add click event to view full content
+            el.addEventListener('click', (e) => {
+                // Only trigger if the click wasn't on a button
+                if (!e.target.closest('button')) {
+                    alert(`Full content:\n\n${item.content}`);
+                }
+            });
+            
+            itemsContainer.appendChild(el);
+        });
+    }
+}
+
+// Function to format timestamp
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Function to send content to scheduler
+function sendToScheduler(content, source) {
+    // Get current time for the timestamp
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // Format the content with source information
+    const formattedContent = `[From ${source} at ${timeString}]\n${content}`;
+    
+    const meta = { 
+        type: 'Clipboard Capture', 
+        source: source,
+        createdAt: now.toISOString() 
+    };
+    
+    localStorage.setItem('generatedContent', formattedContent);
+    localStorage.setItem('generatedMeta', JSON.stringify(meta));
+    
+    showClipboardToast('Content sent to scheduler!');
+}
+
+// Function to monitor clipboard
+function setupClipboardMonitoring() {
+    // Listen for copy events
+    document.addEventListener('copy', function(e) {
+        setTimeout(() => {
+            navigator.clipboard.readText().then(text => {
+                if (text && text !== lastCopiedContent) {
+                    lastCopiedContent = text;
+                    
+                    // Determine source (which content type was this copied from)
+                    let source = 'Unknown source';
+                    const activeTab = document.querySelector('.content-tab.active');
+                    if (activeTab) {
+                        const tabId = activeTab.id;
+                        if (tabId.includes('caption')) source = 'Social Caption';
+                        else if (tabId.includes('video')) source = 'Video Ideas';
+                        else if (tabId.includes('music')) source = 'Music Suggestions';
+                        else if (tabId.includes('strategy')) source = 'Content Strategy';
+                        else if (tabId.includes('custom')) source = 'Custom Content';
+                    }
+                    
+                    saveToClipboardHistory(text, source);
+                }
+            }).catch(err => {
+                console.log('Failed to read clipboard: ', err);
+            });
+        }, 100);
+    });
+}
+// Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set up clipboard monitoring
+      setupClipboardMonitoring();
+      
+      // Load existing clipboard history
+      updateClipboardUI();
+      
+      // Toggle clipboard history panel
+      const clipboardToggle = document.getElementById('clipboardToggle');
+      const clipboardPanel = document.getElementById('clipboardHistoryPanel');
+      
+      if (clipboardToggle && clipboardPanel) {
+        clipboardToggle.addEventListener('click', () => {
+          clipboardPanel.classList.toggle('hidden');
+        });
+      }
+      
+      // Send all to scheduler button
+const sendAllButton = document.getElementById('sendAllToScheduler');
+if (sendAllButton) {
+    sendAllButton.addEventListener('click', () => {
+        if (clipboardHistory.length > 0) {
+            // Combine all content with proper formatting
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const allContent = clipboardHistory.map(item => {
+                const itemTime = new Date(item.timestamp);
+                const itemTimeString = itemTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `[From ${item.source} at ${itemTimeString}]\n${item.content}`;
+            }).join('\n\n');
+            
+            const meta = { 
+                type: 'Multiple Clipboard Items', 
+                source: 'Clipboard History',
+                createdAt: now.toISOString() 
+            };
+            
+            localStorage.setItem('generatedContent', allContent);
+            localStorage.setItem('generatedMeta', JSON.stringify(meta));
+            
+            showClipboardToast('All content sent to scheduler!');
+        }
+    });
+}
+      
+      // Close panel when clicking outside
+      document.addEventListener('click', (e) => {
+        if (clipboardPanel && !clipboardPanel.classList.contains('hidden')) {
+          if (!clipboardPanel.contains(e.target) && e.target !== clipboardToggle) {
+            clipboardPanel.classList.add('hidden');
+          }
+        }
+      });
+    });
+
+    // Toast notification function (if not already exists)
+function showToast(message, type = 'ok') {
+    // Create or use existing toast implementation
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Setup event listeners for profile and notifications
+function setupProfileEvents() {
+    // Notification dropdown
+    document.getElementById('notif-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('notif-dropdown').classList.toggle('hidden');
+    });
+    
+    // Profile menu dropdown
+    document.getElementById('profile-menu-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('profile-menu').classList.toggle('hidden');
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#notif-btn') && !e.target.closest('#notif-dropdown')) {
+            document.getElementById('notif-dropdown').classList.add('hidden');
+        }
+        
+        if (!e.target.closest('#profile-menu-btn') && !e.target.closest('#profile-menu')) {
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+    });
+}
+
+// Load user data from localStorage and update profile
+function loadUserProfile() {
+    // First try to get data from currentUser object
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser && currentUser.name) {
+        // User is logged in with new format
+        document.getElementById('profile-name').textContent = currentUser.name;
+        
+        // Update profile image if available
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        } else if (profileImgElement) {
+            // Generate initials from user name - THIS IS THE KEY PART
+            const initials = getInitials(currentUser.name);
+            profileImgElement.src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+        }
+        
+        // Update profile menu for logged in user
+        const profileMenu = document.getElementById('profile-menu');
+        if (profileMenu) {
+            profileMenu.innerHTML = `
+                <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+            `;
+        }
+    } else {
+        // Fallback to old format or show guest user
+        const userEmail = localStorage.getItem('userEmail');
+        const userName = localStorage.getItem('userName');
+        
+        if (userName) {
+            // User is logged in with old format - USE THE USERNAME, NOT EMAIL
+            document.getElementById('profile-name').textContent = userName;
+            
+            // Generate initials from user name - THIS IS THE KEY PART
+            const initials = getInitials(userName);
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+            
+            // Update profile menu for logged in user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+                `;
+            }
+        } else {
+            // User not logged in, show guest state
+            document.getElementById('profile-name').textContent = 'Guest';
+            document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=GU&background=8B5A2B&color=fff';
+            
+            // Update profile menu for guest user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="login()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Login</button>
+                    <button onclick="signup()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Sign Up</button>
+                `;
+            }
+        }
+    }
+}
+// Load user data if available - USE USERNAME NOT EMAIL
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+if (currentUser && currentUser.name) {
+    document.getElementById('profile-name').textContent = currentUser.name;
+} else {
+    // Fallback to old format or show guest user
+    const userName = localStorage.getItem('userName');
+    if (userName) {
+        document.getElementById('profile-name').textContent = userName;
+    } else {
+        // Fallback to email extraction only if username doesn't exist
+        const userEmail = localStorage.getItem('userEmail');
+        if (userEmail) {
+            const name = userEmail.split('@')[0];
+            document.getElementById('profile-name').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+        } else {
+            // If neither exists, show "Guest"
+            document.getElementById('profile-name').textContent = 'Guest';
+        }
+    }
+}
+
+// Helper function to get initials from a name
+function getInitials(name) {
+    return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .join('')
+        .substring(0, 2); // Get first 2 letters max
+}
+
+// Redirect to login page
+function login() {
+    window.location.href = 'login.html';
+}
+
+// Redirect to signup page
+function signup() {
+    window.location.href = 'login.html'; // Update with your actual signup page URL
+}
+
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupProfileEvents();
+    loadUserProfile();
+
+   
+});
+
+
+    // ================== CONFIG ==================
+    const GEMINI_API_KEY = "AIzaSyAKwpMRf_ToLZ8QEuDGSz02u_pKRGopUj8";
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    // ================== HELPERS ==================
+    const $ = (id)=>document.getElementById(id);
+    const show = (el)=>{el && el.classList.remove('hidden')};
+    const hide = (el)=>{el && el.classList.add('hidden')};
+    function toast(msg, type='ok'){
+      const t=$('toast');
+      if (!t) return;
+      t.textContent=msg;
+      t.style.background = type==='ok'?'#10b981':(type==='warn'?'#f59e0b':'#ef4444');
+      show(t); setTimeout(()=>hide(t),2200);
+    }
+
+    async function callGemini(prompt, temperature=1.0, maxOutputTokens=2048){
+      const res = await fetch(GEMINI_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          contents:[{parts:[{text:prompt}]}],
+          generationConfig:{temperature, maxOutputTokens, topP:0.8, topK:40}
+        })
+      });
+      if(!res.ok){
+        let err = 'API error';
+        try{ const j=await res.json(); err = j.error?.message || err; }catch{}
+        throw new Error(err);
+      }
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      return text;
+    }
+
+    // ================== CONTENT TYPE SELECTION ==================
+    const contentTypes = document.querySelectorAll('.content-type-btn');
+    let selectedType = 'caption';
+    
+    contentTypes.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update UI
+        contentTypes.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Hide all option sections
+        document.querySelectorAll('[id$="-options"]').forEach(section => {
+          hide(section);
+        });
+        
+        // Show selected option section
+        selectedType = btn.dataset.type;
+        const optionsSection = $(`${selectedType}-options`);
+        if (optionsSection) show(optionsSection);
+        
+        // Show the corresponding content tab
+        showContentTab(selectedType);
+        saveAllContent();
+      });
+    });
+
+    // Function to show a specific content tab
+    function showContentTab(type) {
+      // Hide all content tabs
+      document.querySelectorAll('.content-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show the selected content tab
+      const contentTab = $(`${type}-content`);
+      if (contentTab) contentTab.classList.add('active');
+      
+      // Update tab buttons
+      updateTabButtons();
+    }
+
+    // Function to update the content type tab buttons
+    function updateTabButtons() {
+      const tabsContainer = $('#content-type-tabs');
+      if (!tabsContainer) return;
+      
+      const contentTypes = ['caption', 'video', 'music', 'strategy', 'custom'];
+      let hasContent = false;
+      
+      tabsContainer.innerHTML = '';
+      
+      contentTypes.forEach(type => {
+        const contentContainer = $(`${type}-content`);
+        if (contentContainer && contentContainer.querySelector('.p-4')) {
+          hasContent = true;
+          const tabBtn = document.createElement('div');
+          tabBtn.className = `content-type-tab-btn ${type === selectedType ? 'active' : ''}`;
+          tabBtn.dataset.type = type;
+          tabBtn.innerHTML = getTypeLabel(type);
+          tabBtn.addEventListener('click', () => {
+            selectedType = type;
+            showContentTab(type);
+            // Also update the main buttons
+            contentTypes.forEach(b => {
+              const btn = document.querySelector(`.content-type-btn[data-type="${b}"]`);
+              if (btn) {
+                if (b === type) {
+                  btn.classList.add('active');
+                } else {
+                  btn.classList.remove('active');
+                }
+              }
+            });
+          });
+          tabsContainer.appendChild(tabBtn);
+        }
+      });
+      
+      // Show or hide the tabs container based on whether we have content
+      if (hasContent) {
+        show(tabsContainer);
+      } else {
+        hide(tabsContainer);
+      }
+    }
+
+    // Helper function to get label for content type
+    function getTypeLabel(type) {
+      switch(type) {
+        case 'caption': return 'Social Captions';
+        case 'video': return 'Video Ideas';
+        case 'music': return 'Music Suggestions';
+        case 'strategy': return 'Content Strategy';
+        case 'custom': return 'Custom Content';
+        default: return type;
+      }
+    }
+
+    // ================== CONTENT GENERATOR ==================
+    const cgTemp = $('cgTemp'), cgTempLabel = $('cgTempLabel');
+    if (cgTemp && cgTempLabel) {
+      cgTemp.addEventListener('input',()=> {
+        const v=parseFloat(cgTemp.value);
+        cgTempLabel.textContent = v<0.8?'Conservative':(v>1.2?'Creative':'Balanced');
+      });
+    }
+
+    if ($('cgBtn')) {
+      $('cgBtn').onclick = async ()=>{
+        hide($('cgError')); 
+        show($('cgLoading'));
+        
+        // Clear previous results for this type
+        const resultsContainer = $(`${selectedType}-results`);
+        if (resultsContainer) resultsContainer.innerHTML = '';
+        
+        const perfSection = $('cgPerf');
+        if (perfSection) hide(perfSection);
+
+        // Adjust token limit based on length selection
+        const lengthSelect = $('cgVariations');
+        const length = lengthSelect ? lengthSelect.value : 'Medium';
+        let maxTokens = 1024;
+        if (length === 'Medium') maxTokens = 2048;
+        if (length === 'Long') maxTokens = 4096;
+
+        let prompt = '';
+        let contentType = '';
+
+        switch(selectedType) {
+          case 'caption':
+            const idea = $('cgIdea') ? $('cgIdea').value.trim() : '';
+            const tone = $('cgTone') ? $('cgTone').value : '';
+            const style= $('cgStyle') ? $('cgStyle').value : '';
+            const audience=$('cgAudience') ? $('cgAudience').value : '';
+            const type = $('cgType') ? $('cgType').value : '';
+            
+            if(!idea||!tone||!style||!audience||!type){ 
+              toast('Fill all fields for best results','warn'); 
+              hide($('cgLoading'));
+              return; 
+            }
+            
+            contentType = type;
+            prompt = `You are an expert marketing copywriter. Generate creative ${type}s for the topic: "${idea}".
+
+    Constraints:
+    - Tone: ${tone}
+    - Style: ${style}
+    - Target audience: ${audience}
+    - Optimize for engagement and clarity.
+    - Return a numbered list with no extra commentary.`;
+            break;
+            
+          case 'video':
+            const videoIdea = $('videoIdea') ? $('videoIdea').value.trim() : '';
+            const videoStyle = $('videoStyle') ? $('videoStyle').value : '';
+            const videoPlatform = $('videoPlatform') ? $('videoPlatform').value : '';
+            const videoLength = $('videoLength') ? $('videoLength').value : '';
+            
+            if(!videoIdea||!videoStyle||!videoPlatform||!videoLength){ 
+              toast('Fill all fields for best results','warn'); 
+              hide($('cgLoading'));
+              return; 
+            }
+            
+            contentType = 'Video Ideas';
+            prompt = `You are a video content strategist. Generate creative video ideas for: "${videoIdea}".
+
+    Specifications:
+    - Video style: ${videoStyle}
+    - Platform: ${videoPlatform}
+    - Length: ${videoLength}
+    - Include suggestions for visuals, pacing, and key moments.
+    - Return a detailed, numbered list with no extra commentary.`;
+            break;
+            
+          case 'music':
+            const musicIdea = $('musicIdea') ? $('musicIdea').value.trim() : '';
+            const musicMood = $('musicMood') ? $('musicMood').value : '';
+            const musicGenre = $('musicGenre') ? $('musicGenre').value : '';
+            
+            if(!musicIdea||!musicMood){ 
+              toast('Fill all required fields','warn'); 
+              hide($('cgLoading'));
+              return; 
+            }
+            
+            contentType = 'Music Suggestions';
+            prompt = `You are a music supervisor. Suggest appropriate music for: "${musicIdea}".
+
+    Specifications:
+    - Mood/energy: ${musicMood}
+    - ${musicGenre ? `Genre preference: ${musicGenre}` : 'No specific genre preference'}
+    - Provide specific song/artist examples when possible.
+    - Include reasoning for each suggestion.
+    - Return a detailed, numbered list with no extra commentary.`;
+            break;
+            
+          case 'strategy':
+            const strategyIdea = $('strategyIdea') ? $('strategyIdea').value.trim() : '';
+            const strategyGoal = $('strategyGoal') ? $('strategyGoal').value : '';
+            const strategyPlatform = $('strategyPlatform') ? $('strategyPlatform').value : '';
+            
+            if(!strategyIdea||!strategyGoal||!strategyPlatform){ 
+              toast('Fill all fields for best results','warn'); 
+              hide($('cgLoading'));
+              return; 
+            }
+            
+            contentType = 'Content Strategy';
+            prompt = `You are a content strategy expert. Develop a content strategy for: "${strategyIdea}".
+
+    Specifications:
+    - Primary goal: ${strategyGoal}
+    - Platform focus: ${strategyPlatform}
+    - Include content ideas, posting frequency, and engagement tactics.
+    - Return a detailed, organized strategy with no extra commentary.`;
+            break;
+            
+          case 'custom':
+            const customIdea = $('customIdea') ? $('customIdea').value.trim() : '';
+            
+            if(!customIdea){ 
+              toast('Please describe your request','warn'); 
+              hide($('cgLoading'));
+              return; 
+            }
+            
+            contentType = 'Custom Content';
+            prompt = `You are an expert content creator. Generate creative content based on this request: "${customIdea}".
+
+    Guidelines:
+    - Be creative, helpful, and detailed
+    - Provide practical, actionable suggestions
+    - Structure your response clearly
+    - Include specific examples when possible
+    - Return high-quality content with no extra commentary.`;
+            break;
+        }
+
+        try{
+          const text = await callGemini(prompt, parseFloat(cgTemp ? cgTemp.value : 1.0), maxTokens);
+          const container = $(`${selectedType}-results`);
+          
+          if (!container) {
+            throw new Error('Results container not found');
+          }
+          
+          if (selectedType === 'caption') {
+            // For captions, use the existing numbered list format
+            const lines = text.split('\n').map(l=>l.replace(/^\d+\.\s*/,'').trim()).filter(Boolean);
+            lines.forEach((t,i)=>{
+              const card = document.createElement('div');
+              card.className='p-4 rounded-xl border bg-white';
+              card.innerHTML = `
+                <div class="flex items-start justify-between gap-2">
+                  <span class="tag">${contentType}</span>
+                  <span class="text-xs text-slate-500">#${i+1}</span>
+                </div>
+                <p class="mt-3 whitespace-pre-wrap">${t}</p>
+                <div class="mt-3 flex flex-wrap gap-2 justify-between items-center">
+                  <div class="flex gap-2">
+                    <button class="copy px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm"><i class="fa-solid fa-copy mr-1"></i>Copy</button>
+                    <button class="use px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm"><i class="fa-solid fa-arrow-right mr-1"></i>Use in Scheduler</button>
+                  </div>
+                  <span class="text-xs text-slate-400">${i===0?'Primary':i===1?'Alternative':'Variation'}</span>
+                </div>`;
+              container.appendChild(card);
+
+            
+            });
+            
+            // Only show performance predictions for social captions
+            const perfGrid = $('cgPerfGrid');
+            const perfSection = $('cgPerf');
+            if (perfGrid && perfSection) {
+              perfGrid.innerHTML='';
+              const perfLines = text.split('\n').filter(l => l.trim().length > 0);
+              perfLines.forEach((_,i)=>{
+                const score = 72 + i*6 + Math.floor(Math.random()*5);
+                const div=document.createElement('div');
+                div.className='p-4 rounded-xl border bg-white text-center';
+                div.innerHTML=`<div class="text-2xl font-extrabold text-indigo-600">${score}%</div><div class="text-xs mt-1">Predicted Engagement</div><div class="text-[11px] text-slate-500 mt-1">Variation #${i+1}</div>`;
+                perfGrid.appendChild(div);
+              });
+              show(perfSection);
+            }
+          } else {
+            // For other content types, use a different display format
+            const card = document.createElement('div');
+            card.className='p-4 rounded-xl border bg-white';
+            card.innerHTML = `
+              <div class="flex items-start justify-between gap-2 mb-4">
+                <span class="tag">${contentType}</span>
+                <button class="copyAll px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm">
+                  <i class="fa-solid fa-copy mr-1"></i>Copy All
+                </button>
+              </div>
+              <div class="whitespace-pre-wrap">${text}</div>
+              <div class="mt-4 flex justify-end">
+                <button class="use px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm">
+                  <i class="fa-solid fa-arrow-right mr-1"></i>Use in Scheduler
+                </button>
+              </div>`;
+            container.appendChild(card);
+            
+            
+            
+            // Send to scheduler functionality
+            const useBtn = card.querySelector('.use');
+            if (useBtn) {
+              useBtn.onclick = () => {
+                const meta = { type: contentType, createdAt: new Date().toISOString() };
+                localStorage.setItem('generatedContent', text);
+                localStorage.setItem('generatedMeta', JSON.stringify(meta));
+                window.location.href = 'scheduler.html';
+              };
+            }
+          }
+          
+          // Show the content tab for this type
+          showContentTab(selectedType);
+          
+        }catch(e){
+          const err=$('cgError'); 
+          if (err) {
+            err.textContent = 'Failed to generate content: '+e.message; 
+            show(err);
+          }
+        }finally{
+          hide($('cgLoading'));
+          saveAllContent();
+        }
+      };
+    }
+    // Modal control functions
+function openProfileModal() {
+    // Populate with current data
+    document.getElementById('profile-name-input').value = document.getElementById('profile-name').textContent;
+    document.getElementById('profile-email-input').value = localStorage.getItem('userEmail') || 'user@example.com';
+    document.getElementById('profile-modal').classList.remove('hidden');
+}
+
+function closeProfileModal() {
+    document.getElementById('profile-modal').classList.add('hidden');
+}
+
+function openSettingsModal() {
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+
+function closeSettingsModal() {
+    document.getElementById('settings-modal').classList.add('hidden');
+}
+
+// Dark mode toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('settings-dark-mode-toggle').classList.toggle('active');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+// Profile form submission
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('profile-name-input').value;
+    const email = document.getElementById('profile-email-input').value;
+    
+    // Update profile
+    document.getElementById('profile-name').textContent = name;
+    localStorage.setItem('userName', name);
+    localStorage.setItem('userEmail', email);
+    
+    // Update avatar with new initials - ADD THIS
+    const initials = getInitials(name);
+    document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    document.getElementById('profile-preview').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    
+    closeProfileModal();
+    showToast('Profile updated successfully!');
+});
+
+// Profile image upload
+document.getElementById('profile-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            // Update both preview and main profile image
+            document.getElementById('profile-preview').src = event.target.result;
+            document.getElementById('profile-img').src = event.target.result;
+            
+            // Store the custom image in localStorage
+            localStorage.setItem('userProfileImg', event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+    
+   
+    // ================== CONTENT PERSISTENCE ==================
+function saveAllContent() {
+    // Save content for each type
+    const contentTypes = ['caption', 'video', 'music', 'strategy', 'custom'];
+    const allContent = {};
+    
+    contentTypes.forEach(type => {
+        const container = document.getElementById(`${type}-results`);
+        if (container && container.innerHTML.trim() !== '') {
+            allContent[type] = container.innerHTML;
+        }
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('savedGeneratedContent', JSON.stringify(allContent));
+    
+    // Save current active tab
+    localStorage.setItem('activeContentTab', selectedType);
+    
+    // Save form values - EXPANDED TO INCLUDE ALL INPUT FIELDS
+    const formValues = {
+        // Caption inputs
+        cgIdea: document.getElementById('cgIdea')?.value || '',
+        cgTone: document.getElementById('cgTone')?.value || '',
+        cgStyle: document.getElementById('cgStyle')?.value || '',
+        cgAudience: document.getElementById('cgAudience')?.value || '',
+        cgType: document.getElementById('cgType')?.value || '',
+        
+        // Video inputs
+        videoIdea: document.getElementById('videoIdea')?.value || '',
+        videoStyle: document.getElementById('videoStyle')?.value || '',
+        videoPlatform: document.getElementById('videoPlatform')?.value || '',
+        videoLength: document.getElementById('videoLength')?.value || '',
+        
+        // Music inputs
+        musicIdea: document.getElementById('musicIdea')?.value || '',
+        musicMood: document.getElementById('musicMood')?.value || '',
+        musicGenre: document.getElementById('musicGenre')?.value || '',
+        
+        // Strategy inputs
+        strategyIdea: document.getElementById('strategyIdea')?.value || '',
+        strategyGoal: document.getElementById('strategyGoal')?.value || '',
+        strategyPlatform: document.getElementById('strategyPlatform')?.value || '',
+        
+        // Custom inputs
+        customIdea: document.getElementById('customIdea')?.value || '',
+        
+        // General settings
+        cgVariations: document.getElementById('cgVariations')?.value || 'Medium',
+        cgTemp: document.getElementById('cgTemp')?.value || '1.0'
+    };
+    
+    localStorage.setItem('savedFormValues', JSON.stringify(formValues));
+    
+    // NEW: Save the current content type's input specifically for quick access
+    const currentInput = document.getElementById(`${selectedType}Idea`);
+    if (currentInput) {
+        localStorage.setItem('currentInput', currentInput.value);
+    }
+}
+// ================== AUTO-SAVE SETUP ==================
+// Debounce function to prevent too frequent saves
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Set up auto-save for all input fields
+function setupAutoSave() {
+    // Get all input, textarea, and select elements
+    const inputElements = document.querySelectorAll(
+        '#cgIdea, #cgTone, #cgStyle, #cgAudience, #cgType, ' +
+        '#videoIdea, #videoStyle, #videoPlatform, #videoLength, ' +
+        '#musicIdea, #musicMood, #musicGenre, ' +
+        '#strategyIdea, #strategyGoal, #strategyPlatform, ' +
+        '#customIdea, #cgVariations, #cgTemp'
+    );
+    
+    // Add event listeners to all input fields
+    inputElements.forEach(input => {
+        input.addEventListener('input', debounce(saveAllContent, 1000));
+        input.addEventListener('change', saveAllContent);
+    });
+    
+    // Also save when content type changes
+    contentTypes.forEach(btn => {
+        btn.addEventListener('click', () => {
+            saveAllContent();
+        });
+    });
+}
+// Add this toast function (if it doesn't exist already)
+function toast(msg, type = 'ok') {
+  // Create or use existing toast implementation
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// Function to update user profile display
+function updateUserProfile() {
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser) {
+        // Update profile name if element exists
+        const profileNameElement = document.getElementById('profile-name');
+        if (profileNameElement) {
+            profileNameElement.textContent = currentUser.name;
+        }
+        
+        // Update profile image if element exists
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        }
+        
+        // Show user profile, hide login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (loginButton) loginButton.classList.add('hidden');
+        if (signupButton) signupButton.classList.add('hidden');
+        if (notificationIcons) notificationIcons.classList.remove('hidden');
+        if (reminderIcons) reminderIcons.classList.remove('hidden');
+    } else {
+        // User not logged in, show login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.add('hidden');
+        if (loginButton) loginButton.classList.remove('hidden');
+        if (signupButton) signupButton.classList.remove('hidden');
+        if (notificationIcons) notificationIcons.classList.add('hidden');
+        if (reminderIcons) reminderIcons.classList.add('hidden');
+    }
+}
+    
+   
+// ================== CONTENT PERSISTENCE ==================
+function saveAllContent() {
+    // Save content for each type
+    const contentTypes = ['caption', 'video', 'music', 'strategy', 'custom'];
+    const allContent = {};
+    
+    contentTypes.forEach(type => {
+        const container = document.getElementById(`${type}-results`);
+        if (container && container.innerHTML.trim() !== '') {
+            allContent[type] = container.innerHTML;
+        }
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('savedGeneratedContent', JSON.stringify(allContent));
+    
+    // Save current active tab
+    localStorage.setItem('activeContentTab', selectedType);
+    
+    // Save form values
+    const formValues = {
+        cgIdea: document.getElementById('cgIdea')?.value || '',
+        cgTone: document.getElementById('cgTone')?.value || '',
+        cgStyle: document.getElementById('cgStyle')?.value || '',
+        cgAudience: document.getElementById('cgAudience')?.value || '',
+        cgType: document.getElementById('cgType')?.value || '',
+        videoIdea: document.getElementById('videoIdea')?.value || '',
+        videoStyle: document.getElementById('videoStyle')?.value || '',
+        videoPlatform: document.getElementById('videoPlatform')?.value || '',
+        videoLength: document.getElementById('videoLength')?.value || '',
+        musicIdea: document.getElementById('musicIdea')?.value || '',
+        musicMood: document.getElementById('musicMood')?.value || '',
+        musicGenre: document.getElementById('musicGenre')?.value || '',
+        strategyIdea: document.getElementById('strategyIdea')?.value || '',
+        strategyGoal: document.getElementById('strategyGoal')?.value || '',
+        strategyPlatform: document.getElementById('strategyPlatform')?.value || '',
+        customIdea: document.getElementById('customIdea')?.value || '',
+        cgVariations: document.getElementById('cgVariations')?.value || 'Medium',
+        cgTemp: document.getElementById('cgTemp')?.value || '1.0'
+    };
+    
+    localStorage.setItem('savedFormValues', JSON.stringify(formValues));
+}
+
+function loadAllContent() {
+    // Load saved content
+    const savedContent = JSON.parse(localStorage.getItem('savedGeneratedContent') || '{}');
+    
+    Object.keys(savedContent).forEach(type => {
+        const container = document.getElementById(`${type}-results`);
+        if (container) {
+            container.innerHTML = savedContent[type];
+        }
+    });
+    
+    // Load active tab
+    const savedTab = localStorage.getItem('activeContentTab');
+    if (savedTab && savedTab !== selectedType) {
+        // Switch to the saved tab
+        const tabButton = document.querySelector(`.content-type-btn[data-type="${savedTab}"]`);
+        if (tabButton) {
+            tabButton.click();
+        }
+    }
+    
+    // Load form values
+    const savedFormValues = JSON.parse(localStorage.getItem('savedFormValues') || '{}');
+    Object.keys(savedFormValues).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = savedFormValues[id];
+        }
+    });
+    
+    // Update UI for any loaded content
+    updateTabButtons();
+    
+    // Update temperature label
+    const cgTemp = document.getElementById('cgTemp');
+    const cgTempLabel = document.getElementById('cgTempLabel');
+    if (cgTemp && cgTempLabel) {
+        const v = parseFloat(cgTemp.value);
+        cgTempLabel.textContent = v < 0.8 ? 'Conservative' : (v > 1.2 ? 'Creative' : 'Balanced');
+    }
+}
+
+function clearAllContent() {
+    if (confirm('Are you sure you want to clear all generated content?')) {
+        // Clear content for each type
+        const contentTypes = ['caption', 'video', 'music', 'strategy', 'custom'];
+        contentTypes.forEach(type => {
+            const container = document.getElementById(`${type}-results`);
+            if (container) {
+                container.innerHTML = '';
+            }
+        });
+        
+        // Clear from localStorage
+        localStorage.removeItem('savedGeneratedContent');
+        localStorage.removeItem('savedFormValues');
+        
+        // Update UI
+        updateTabButtons();
+        
+        toast('All content cleared', 'ok');
+    }
+}
+
+// ================== AUTO-SAVE SETUP ==================
+// Debounce function to prevent too frequent saves
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Set up auto-save for all input fields
+function setupAutoSave() {
+    // Get all input, textarea, and select elements
+    const inputElements = document.querySelectorAll(
+        '#cgIdea, #cgTone, #cgStyle, #cgAudience, #cgType, ' +
+        '#videoIdea, #videoStyle, #videoPlatform, #videoLength, ' +
+        '#musicIdea, #musicMood, #musicGenre, ' +
+        '#strategyIdea, #strategyGoal, #strategyPlatform, ' +
+        '#customIdea, #cgVariations, #cgTemp'
+    );
+    
+    // Add event listeners to all input fields
+    inputElements.forEach(input => {
+        input.addEventListener('input', debounce(saveAllContent, 1000));
+        input.addEventListener('change', saveAllContent);
+    });
+    
+    // Also save when content type changes
+    contentTypes.forEach(btn => {
+        btn.addEventListener('click', () => {
+            saveAllContent();
+        });
+    });
+}
+
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadAllContent();
+    
+    // Add event listener for the clear button
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', clearAllContent);
+    }
+    
+    // Set up auto-save functionality
+    setupAutoSave();
+});
+
+function loadAllContent() {
+    // Load saved content
+    const savedContent = JSON.parse(localStorage.getItem('savedGeneratedContent') || '{}');
+    
+    Object.keys(savedContent).forEach(type => {
+        const container = document.getElementById(`${type}-results`);
+        if (container) {
+            container.innerHTML = savedContent[type];
+        }
+    });
+    
+    // Load active tab
+    const savedTab = localStorage.getItem('activeContentTab');
+    if (savedTab && savedTab !== selectedType) {
+        // Switch to the saved tab
+        const tabButton = document.querySelector(`.content-type-btn[data-type="${savedTab}"]`);
+        if (tabButton) {
+            tabButton.click();
+        }
+    }
+    
+    // Load form values - RESTORE ALL INPUT FIELDS
+    const savedFormValues = JSON.parse(localStorage.getItem('savedFormValues') || '{}');
+    Object.keys(savedFormValues).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = savedFormValues[id];
+        }
+    });
+    
+    // Update UI for any loaded content
+    updateTabButtons();
+    
+    // Update temperature label
+    const cgTemp = document.getElementById('cgTemp');
+    const cgTempLabel = document.getElementById('cgTempLabel');
+    if (cgTemp && cgTempLabel) {
+        const v = parseFloat(cgTemp.value);
+        cgTempLabel.textContent = v < 0.8 ? 'Conservative' : (v > 1.2 ? 'Creative' : 'Balanced');
+    }
+}
+
+function clearAllContent() {
+    if (confirm('Are you sure you want to clear all generated content?')) {
+        // Clear content for each type
+        const contentTypes = ['caption', 'video', 'music', 'strategy', 'custom'];
+        contentTypes.forEach(type => {
+            const container = document.getElementById(`${type}-results`);
+            if (container) {
+                container.innerHTML = '';
+            }
+        });
+        
+        // Clear from localStorage
+        localStorage.removeItem('savedGeneratedContent');
+        localStorage.removeItem('savedFormValues');
+        
+        // Update UI
+        updateTabButtons();
+        
+        toast('All content cleared', 'ok');
+    }
+}
+    // Initialize content loading when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+    loadAllContent();
+
+    initClipboard();
+    
+    // Add event listener for the clear button
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', clearAllContent);
+    }
+    
+    // Add auto-save when inputs change
+    const inputElements = document.querySelectorAll(
+        '#cgIdea, #cgTone, #cgStyle, #cgAudience, #cgType, ' +
+        '#videoIdea, #videoStyle, #videoPlatform, #videoLength, ' +
+        '#musicIdea, #musicMood, #musicGenre, ' +
+        '#strategyIdea, #strategyGoal, #strategyPlatform, ' +
+        '#customIdea, #cgVariations, #cgTemp'
+    );
+    
+    inputElements.forEach(input => {
+        input.addEventListener('change', saveAllContent);
+        input.addEventListener('input', saveAllContent);
+    });
+});
+
+// Dark Mode Functionality
+function initDarkMode() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('dark-mode-toggle').classList.add('active');
+    }
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    
+    body.classList.toggle('dark-mode');
+    darkModeToggle.classList.toggle('active');
+    
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+    
+    // Show toast notification
+    const mode = body.classList.contains('dark-mode') ? 'Dark' : 'Light';
+    showToast(`${mode} mode activated`);
+}
+
+// Update the toast function to support dark mode
+function showToast(message, type = 'ok') {
+    // Remove existing toast if any
+    const existingToast = document.getElementById('clipboardToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.id = 'clipboardToast';
+    toast.className = 'clipboard-toast';
+    toast.innerHTML = `
+        <i class="fa-solid fa-clipboard-check"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Remove toast after 3 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 3000);
+
+
+}
+
+
+
+// Add this function to your content generator page
+function updateUserProfile() {
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser) {
+        // Update profile name if element exists
+        const profileNameElement = document.getElementById('profile-name');
+        if (profileNameElement && currentUser.name) {
+            profileNameElement.textContent = currentUser.name;
+        }
+        
+        // Update profile image if element exists
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        }
+        
+        // Show user profile, hide login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (loginButton) loginButton.classList.add('hidden');
+        if (signupButton) signupButton.classList.add('hidden');
+        if (notificationIcons) notificationIcons.classList.remove('hidden');
+        if (reminderIcons) reminderIcons.classList.remove('hidden');
+    } else {
+        // User not logged in, show login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.add('hidden');
+        if (loginButton) loginButton.classList.remove('hidden');
+        if (signupButton) signupButton.classList.remove('hidden');
+        if (notificationIcons) notificationIcons.classList.add('hidden');
+        if (reminderIcons) reminderIcons.classList.add('hidden');
+    }
+}
+
+
+
+</script> 
+<!-- Profile Modal (simplified version) -->
+<div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+        
+        <form id="profile-form">
+            <div class="flex flex-col items-center mb-6">
+                <div class="relative mb-4">
+                    <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" 
+                         alt="Profile" class="w-24 h-24 rounded-full object-cover" id="profile-preview">
+                    <label for="profile-upload" class="absolute bottom-0 right-0 bg-[var(--primary-brown)] text-white p-2 rounded-full cursor-pointer">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="profile-upload" class="hidden" accept="image/*">
+                </div>
+                <p class="text-gray-600">Click camera icon to change photo</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-name">Full Name</label>
+                <input type="text" id="profile-name-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="User" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-email">Email</label>
+                <input type="email" id="profile-email-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="user@example.com" required>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <button type="button" onclick="closeProfileModal()" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold">Cancel</button>
+                <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Settings Modal (simplified version) -->
+<div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Settings</h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="font-bold mb-4">Appearance</h3>
+                <div class="flex items-center justify-between">
+                    <span>Dark Mode</span>
+                    <div id="settings-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold mb-4">Notifications</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span>Email Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Push Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button onclick="closeSettingsModal()" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

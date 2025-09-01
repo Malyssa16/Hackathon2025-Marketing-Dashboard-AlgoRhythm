@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowthOps - AI-Powered Marketing Suite</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary-brown: #8B5A2B;
+            --light-brown: #A67B5B;
+            --dark-brown: #654321;
+            --primary-green: #6A8E61;
+            --light-green: #8A9B68;
+            --dark-green: #465B38;
+            --cream: #F8F6F0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cream);
+            color: #2D4A3B;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .navbar {
+            background: rgba(26, 32, 44, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark-mode .glass-effect {
+            background: rgba(26, 32, 44, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-mode .feature-card,
+        .dark-mode .testimonial-card {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-mode .form-input {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .form-input:focus {
+            border-color: var(--primary-brown);
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.3);
+        }
+        
+        .dark-mode .text-gray-600 {
+            color: #a0aec0;
+        }
+        
+        .dark-mode .text-gray-700 {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .bg-gray-50 {
+            background-color: #2d3748;
+        }
+        
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        
+        .dark-mode .social-login-btn {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-brown) 0%, var(--dark-brown) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--dark-brown) 0%, var(--primary-brown) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(107, 72, 40, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(70, 91, 56, 0.2);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.1) 0%, rgba(106, 142, 97, 0.1) 100%);
+        }
+        
+        .dark-mode .hero-gradient {
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.2) 0%, rgba(106, 142, 97, 0.2) 100%);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 90, 43, 0.1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(139, 90, 43, 0.3);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .testimonial-card {
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-brown);
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1);
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(139, 90, 43, 0.2);
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .toggle-password {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-password:hover {
+            color: var(--primary-brown);
+        }
+        
+        .social-login-btn {
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+        
+        .social-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .countup {
+            font-weight: bold;
+        }
+        
+        /* Particle background effect */
+        .particles-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-brown);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--dark-green);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Password strength meter */
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            background: #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .password-strength {
+            background: #4a5568;
+        }
+        
+        .password-strength-meter {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+        
+        /* Custom checkbox */
+        .custom-checkbox {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .dark-mode .checkmark {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: var(--primary-brown);
+            border-color: var(--primary-brown);
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .custom-checkbox .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        /* Password requirements */
+        .password-requirements {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .dark-mode .password-requirements {
+            background-color: #2d3748;
+        }
+        
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        
+        .requirement.met {
+            color: var(--primary-green);
+        }
+        
+        .requirement i {
+            margin-right: 5px;
+        }
+        
+        /* Help button */
+        .help-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-brown);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 40;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .help-button:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Dashboard notification icons */
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Welcome screens */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: transform 0.5s ease;
+            overflow: hidden;
+        }
+        
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139, 90, 43, 0.1) 0%, rgba(106, 142, 97, 0.1) 100%);
+            z-index: -1;
+        }
+        
+        .welcome-screen-content {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+        }
+        
+        .dark-mode .welcome-screen {
+            background: #1a202c;
+        }
+        
+        .dark-mode .welcome-screen-content {
+            background: rgba(26, 32, 44, 0.9);
+        }
+        
+        .welcome-screen.hidden {
+            transform: translateY(-100%);
+        }
+        
+        /* User profile images */
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* mini dropdown */
+        .mini-dropdown {
+            display: none;
+        }
+        .mini-dropdown.show { display:block; }
+        
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .dark-mode-toggle.active {
+            background: var(--primary-brown);
+        }
+        
+        .dark-mode-toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .dark-mode-toggle.active::after {
+            transform: translateX(30px);
+        }
+        
+        /* Profile modal */
+        .profile-modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Notification dropdown */
+        .notification-item {
+            transition: background-color 0.2s;
+        }
+        
+        .notification-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark-mode .notification-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+        
+        /* Welcome screen particles */
+        .welcome-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .welcome-particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 8s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+    
+    <!-- Help Button -->
+    <div class="help-button" onclick="openHelpModal()">
+        <i class="fas fa-question text-xl"></i>
+    </div>
+    
+    <!-- Dark Mode Toggle -->
+    <div class="fixed top-4 right-4 z-50 flex items-center">
+        <span class="mr-2 text-sm hidden md:inline">Dark Mode</span>
+        <div id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+    </div>
+
+    <!-- Welcome Screen (shown after signup) -->
+    <div id="welcome-screen" class="welcome-screen hidden">
+        <div class="welcome-particles" id="welcome-particles"></div>
+        <div class="welcome-screen-content text-center">
+            <div class="bg-[var(--primary-green)] text-white p-6 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-8">
+                <i class="fas fa-check text-4xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold mb-6">Welcome to GrowthOps!</h1>
+            <p class="text-xl text-gray-600 mb-10">
+                Thank you for joining our community of marketers. We're excited to help you create, schedule, and analyze your content.
+            </p>
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="bg-[var(--primary-brown)] text-white p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Create Content</h3>
+                    <p class="text-gray-600 text-sm">Use our AI tools to generate engaging content</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="bg-[var(--primary-green)] text-white p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Schedule Posts</h3>
+                    <p class="text-gray-600 text-sm">Plan your content with our smart scheduler</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="bg-[var(--primary-brown)] text-white p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3 class="font-bold mb-2">Analyze Performance</h3>
+                    <p class="text-gray-600 text-sm">Track engagement with our analytics dashboard</p>
+                </div>
+            </div>
+            <button onclick="closeWelcomeScreen()" class="btn-primary px-8 py-4 rounded-lg text-white font-semibold text-lg">
+                Get Started
+            </button>
+        </div>
+    </div>
+
+    <!-- Welcome Back Screen (shown after login) -->
+    <div id="welcome-back-screen" class="welcome-screen hidden">
+        <div class="welcome-particles" id="welcome-back-particles"></div>
+        <div class="welcome-screen-content text-center">
+            <div class="bg-[var(--primary-brown)] text-white p-6 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-8">
+                <i class="fas fa-smile text-4xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold mb-6">Welcome Back!</h1>
+            <p class="text-xl text-gray-600 mb-10">
+                We're glad to see you again. Your content strategy is waiting for you.
+            </p>
+            <div class="bg-gray-50 p-6 rounded-xl mb-10 text-left max-w-md mx-auto">
+                <h3 class="font-bold mb-4 flex items-center">
+                    <i class="fas fa-bell text-[var(--primary-green)] mr-2"></i>
+                    Notifications
+                </h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center">
+                        <i class="fas fa-check-circle text-[var(--primary-green)] mr-2"></i>
+                        <span>3 posts scheduled for today</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chart-line text-[var(--primary-brown)] mr-2"></i>
+                        <span>Your engagement increased by 12% this week</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                        <span>New AI feature available</span>
+                    </li>
+                </ul>
+            </div>
+            <button onclick="closeWelcomeBackScreen()" class="btn-primary px-8 py-4 rounded-lg text-white font-semibold text-lg">
+                Continue to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar fixed top-0 w-full z-50 py-4 px-6 md:px-12 flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="index.html" class="text-2xl font-bold flex items-center">
+                <span class="text-[var(--primary-brown)]">Growth</span>
+                <span class="text-[var(--primary-green)]">Ops</span>
+            </a>
+        </div>
+        
+        <div class="hidden md:flex space-x-8">
+            <a href="#features" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Features</a>
+            <a href="#how-it-works" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">How It Works</a>
+            <a href="#pricing" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Pricing</a>
+            <a href="#testimonials" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Testimonials</a>
+            <a href="#faq" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">FAQ</a>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Notification icons (visible after login) -->
+            <div class="relative hidden" id="notification-icons">
+                <button id="notif-btn" class="relative px-2">
+                    <i class="fas fa-bell text-gray-700 text-xl"></i>
+                    <span class="notification-badge" id="notif-badge">3</span>
+                </button>
+                <div id="notif-dropdown" class="hidden absolute right-0 mt-3 bg-white rounded-xl shadow-lg p-4 z-50 w-72">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold">Notifications</h4>
+                        <button class="text-xs text-[var(--primary-brown)] hover:underline" onclick="markAllNotificationsAsRead()">Mark all as read</button>
+                    </div>
+                    <ul class="text-sm space-y-2">
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Post scheduling opened')">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-[var(--primary-green)] mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">3 posts scheduled for today</p>
+                                    <p class="text-gray-500 text-xs">2 hours ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Analytics dashboard opened')">
+                            <div class="flex items-start">
+                                <i class="fas fa-chart-line text-[var(--primary-brown)] mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">Your engagement increased by 12% this week</p>
+                                    <p class="text-gray-500 text-xs">5 hours ago</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('New features shown')">
+                            <div class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">New AI feature available</p>
+                                    <p class="text-gray-500 text-xs">1 day ago</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="relative hidden" id="reminder-icons">
+                <button id="rem-btn" class="relative px-2">
+                    <i class="fas fa-clock text-gray-700 text-xl"></i>
+                    <span class="notification-badge" id="rem-badge">1</span>
+                </button>
+                <div id="rem-dropdown" class="hidden absolute right-0 mt-3 bg-white rounded-xl shadow-lg p-4 z-50 w-64">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold">Reminders</h4>
+                        <button class="text-xs text-[var(--primary-brown)] hover:underline" onclick="markAllRemindersAsRead()">Mark all as read</button>
+                    </div>
+                    <ul class="text-sm space-y-2">
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Meeting details shown')">
+                            <div class="flex items-start">
+                                <i class="far fa-calendar-check mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">Meeting at 3:00 PM</p>
+                                    <p class="text-gray-500 text-xs">Today</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Scheduling reminder set')">
+                            <div class="flex items-start">
+                                <i class="fas fa-bell mr-2 mt-1"></i>
+                                <div>
+                                    <p class="font-medium">Schedule tomorrow's post</p>
+                                    <p class="text-gray-500 text-xs">Tomorrow</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button onclick="openLoginModal()" class="px-4 py-2 rounded-lg text-[var(--primary-brown)] hover:bg-gray-100 transition-colors" id="login-button">Log in</button>
+            <button onclick="openSignupModal()" class="btn-primary px-6 py-2 rounded-lg text-white" id="signup-button">Sign up</button>
+            
+            <!-- User profile (visible after login) -->
+            <div class="hidden items-center relative" id="user-profile">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                     alt="User profile" class="profile-img mr-2" id="profile-img">
+                <span id="profile-name" class="text-gray-700">Sarah</span>
+                <button id="profile-menu-btn" class="ml-2 text-gray-600"><i class="fas fa-caret-down"></i></button>
+                <div id="profile-menu" class="absolute right-0 mt-10 bg-white rounded-xl shadow-lg p-2 hidden z-50" style="min-width:150px;">
+                    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+                </div>
+            </div>
+            
+            <div class="md:hidden ml-4">
+                <button id="mobile-menu-button" class="text-gray-700">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center space-y-8 transform translate-x-full transition-transform duration-300">
+        <button id="close-mobile-menu" class="absolute top-6 right-6 text-2xl text-gray-700">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <a href="#features" class="text-2xl font-medium text-gray-700" onclick="closeMobileMenu()">Features</a>
+        <a href="#how-it-works" class="text-2xl font-medium text-gray-700" onclick="closeMobileMenu()">How It Works</a>
+        <a href="#pricing" class="text-2xl font-medium text-gray-700" onclick="closeMobileMenu()">Pricing</a>
+        <a href="#testimonials" class="text-2xl font-medium text-gray-700" onclick="closeMobileMenu()">Testimonials</a>
+        <a href="#faq" class="text-2xl font-medium text-gray-700" onclick="closeMobileMenu()">FAQ</a>
+        
+        <div class="flex space-x-4 mt-8">
+            <button onclick="openLoginModal(); closeMobileMenu();" class="px-6 py-3 rounded-lg border border-[var(--primary-brown)] text-[var(--primary-brown)]">Log in</button>
+            <button onclick="openSignupModal(); closeMobileMenu();" class="btn-primary px-6 py-3 rounded-lg text-white">Sign up</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="particles-container min-h-screen flex items-center pt-24 pb-16 px-6 md:px-12 hero-gradient">
+        <!-- Animated particles background -->
+        <div id="particles"></div>
+        
+        <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div data-aos="fade-right" data-aos-duration="1000">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                    <span class="text-[var(--primary-brown)]">AI-Powered</span>
+                    <span class="block text-[var(--primary-green)]">Marketing Suite</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Create, schedule, and analyze content with our all-in-one platform powered by artificial intelligence. 
+                    Boost your engagement and grow your audience effortlessly.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="openSignupModal()" class="btn-secondary px-8 py-4 rounded-lg text-white font-semibold text-lg pulse">
+                        Get Started Free
+                    </button>
+                    <button class="px-8 py-4 rounded-lg border border-[var(--primary-brown)] text-[var(--primary-brown)] font-semibold text-lg flex items-center">
+                        <i class="fas fa-play-circle mr-2"></i> Watch Demo
+                    </button>
+                </div>
+                
+                <div class="mt-12 flex items-center space-x-8">
+                    <div class="text-center">
+                        <div class="countup text-3xl font-bold text-[var(--primary-brown)]" data-count="5000">0</div>
+                        <div class="text-gray-600">Active Users</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="countup text-3xl font-bold text-[var(--primary-brown)]" data-count="120000">0</div>
+                        <div class="text-gray-600">Posts Created</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="countup text-3xl font-bold text-[var(--primary-brown)]" data-count="98">0</div>
+                        <div class="text-gray-600">Satisfaction Rate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div data-aos="fade-left" data-aos-duration="1000" class="relative">
+                <div class="glass-effect rounded-2xl p-6 shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                         alt="Dashboard preview" class="rounded-xl shadow-md">
+                </div>
+                
+                <div class="absolute -top-6 -left-6 glass-effect p-4 rounded-xl shadow-lg floating">
+                    <div class="bg-[var(--primary-green)] text-white p-3 rounded-full">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+                </div>
+                
+                <div class="absolute -bottom-6 -right-6 glass-effect p-4 rounded-xl shadow-lg floating" style="animation-delay: 1s;">
+                    <div class="bg-[var(--primary-brown)] text-white p-3 rounded-full">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6 md:px-12 bg-white">
+        <div class="container mx-auto">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    Powerful Features for <span class="text-[var(--primary-green)]">Modern Marketers</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Our suite of tools helps you create better content, schedule it at the perfect time, and analyze performance.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card rounded-2xl p-8" data-aos="fade-up" data-aos-delay="0">
+                    <div class="bg-[var(--primary-brown)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <i class="fas fa-wand-magic-sparkles text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">AI Content Generator</h3>
+                    <p class="text-gray-600 mb-6">
+                        Create engaging captions, video ideas, and content strategies with our powerful AI assistant.
+                    </p>
+                    <a href="index.html" class="text-[var(--primary-brown)] font-semibold flex items-center">
+                        Try it now <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card rounded-2xl p-8" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-[var(--primary-green)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <i class="fas fa-calendar-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Smart Scheduler</h3>
+                    <p class="text-gray-600 mb-6">
+                        Schedule posts at optimal times with AI-powered predictions for maximum engagement.
+                    </p>
+                    <a href="scheduler.html" class="text-[var(--primary-green)] font-semibold flex items-center">
+                        Try it now <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card rounded-2xl p-8" data-aos="fade-up" data-aos-delay="400">
+                    <div class="bg-[var(--primary-brown)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-pie text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Performance Analytics</h3>
+                    <p class="text-gray-600 mb-6">
+                        Track engagement, growth, and content performance with detailed analytics and insights.
+                    </p>
+                    <a href="sentiment_dashboard.html" class="text-[var(--primary-brown)] font-semibold flex items-center">
+                        Try it now <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 px-6 md:px-12 bg-gray-50">
+        <div class="container mx-auto">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    How <span class="text-[var(--primary-brown)]">GrowthOps</span> Works
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Getting started with our platform is simple and straightforward. Here's how it works:
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                    <div class="bg-white p-8 rounded-2xl shadow-md mb-6">
+                        <div class="bg-[var(--primary-green)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <span class="text-2xl font-bold">1</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Sign Up & Connect</h3>
+                        <p class="text-gray-600">
+                            Create your account and connect your social media profiles in just a few clicks.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-white p-8 rounded-2xl shadow-md mb-6">
+                        <div class="bg-[var(--primary-brown)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <span class="text-2xl font-bold">2</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Create & Schedule</h3>
+                        <p class="text-gray-600">
+                            Use our AI tools to create content and schedule it for optimal engagement times.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="text-center" data-aos="fade-up" data-aos-delay="400">
+                    <div class="bg-white p-8 rounded-2xl shadow-md mb-6">
+                        <div class="bg-[var(--primary-green)] text-white p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                            <span class="text-2xl font-bold">3</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Analyze & Grow</h3>
+                        <p class="text-gray-600">
+                            Track performance with our analytics and refine your strategy for better results.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-16" data-aos="fade-up">
+                <button onclick="openSignupModal()" class="btn-primary px-8 py-4 rounded-lg text-white font-semibold text-lg">
+                    Get Started Today
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 px-6 md:px-12 bg-white">
+        <div class="container mx-auto">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    What Our <span class="text-[var(--primary-green)]">Users Say</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Don't just take our word for it. Here's what our users have to say about GrowthOps.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="testimonial-card bg-gray-50 p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="0">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="User" class="w-14 h-14 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Sarah Johnson</h4>
+                            <p class="text-gray-600">Social Media Manager</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        "GrowthOps has completely transformed how we manage our social media. The AI content suggestions are spot-on and have increased our engagement by 40%."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="User" class="w-14 h-14 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Michael Chen</h4>
+                            <p class="text-gray-600">Content Creator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        "The scheduling feature saves me hours each week. The optimal timing suggestions have doubled our click-through rates. This tool is a game-changer!"
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="400">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="User" class="w-14 h-14 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Jessica Williams</h4>
+                            <p class="text-gray-600">Marketing Director</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        "The analytics dashboard provides insights I haven't found anywhere else. We've been able to refine our strategy and increase ROI by 65% in just 3 months."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star');" class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6 md:px-12 bg-gradient-to-r from-[var(--primary-brown)] to-[var(--primary-green)] text-white">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">
+                Ready to Transform Your Social Media Strategy?
+            </h2>
+            <p class="text-xl mb-10 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                Join thousands of marketers who are already using GrowthOps to save time and boost engagement.
+            </p>
+            <button onclick="openSignupModal()" class="bg-white text-[var(--primary-brown)] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors" data-aos="fade-up" data-aos-delay="400">
+                Get Started Free
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 md:px-12 bg-gray-100">
+        <div class="container mx-auto grid md:grid-cols-4 gap-8">
+            <div>
+                <a href="index.html" class="text-2xl font-bold flex items-center mb-6">
+                    <span class="text-[var(--primary-brown)]">Growth</span>
+                    <span class="text-[var(--primary-green)]">Ops</span>
+                </a>
+                <p class="text-gray-600 mb-6">
+                    AI-powered tools to create, schedule, and analyze your social media content.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-[var(--primary-brown)]">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="index.html" class="text-gray-600 hover:text-[var(--primary-brown)]">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="index.html" class="text-gray-600 hover:text-[var(--primary-brown)]">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="index.html" class="text-gray-600 hover:text-[var(--primary-brown)]">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-lg mb-6">Product</h3>
+                <ul class="space-y-3">
+                    <li><a href="index.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Features</a></li>
+                    <li><a href="pricing.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Pricing</a></li>
+                    <li><a href="integrations.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Integrations</a></li>
+                    <li><a href="updates.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Updates</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-lg mb-6">Resources</h3>
+                <ul class="space-y-3">
+                    <li><a href="blog.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Blog</a></li>
+                    <li><a href="tutorials.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Tutorials</a></li>
+                    <li><a href="webinars.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Webinars</a></li>
+                    <li><a href="help.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Help Center</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="font-bold text-lg mb-6">Company</h3>
+                <ul class="space-y-3">
+                    <li><a href="about.html" class="text-gray-600 hover:text-[var(--primary-brown)]">About Us</a></li>
+                    <li><a href="careers.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Careers</a></li>
+                    <li><a href="contact.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Contact</a></li>
+                    <li><a href="press.html" class="text-gray-600 hover:text-[var(--primary-brown)]">Press</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container mx-auto mt-12 pt-8 border-t border-gray-200 text-center text-gray-600">
+            <p>© 2025 GrowthOps. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
+            <p class="text-gray-600 mb-6">Log in to your account to continue</p>
+            
+            <form id="login-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" placeholder="Your email address" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2" for="login-password">Password</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" placeholder="Your password" required>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <i class="far fa-eye-slash toggle-password cursor-pointer" id="toggle-login-password"></i>
+                        </span>
+                    </div>
+                    <div class="text-right mt-2">
+                        <a href="forgot-password.html" class="text-sm text-[var(--primary-brown)] hover:underline">Forgot password?</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mb-6">
+                    <label class="custom-checkbox flex items-center">
+                        <input type="checkbox" id="remember-me">
+                        <span class="checkmark"></span>
+                        <span class="ml-2 text-gray-700">Remember me</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-semibold mb-6">
+                    Log In
+                </button>
+                
+                <div class="text-center text-gray-600 mb-6">Or continue with</div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button type="button" class="social-login-btn py-3 rounded-lg font-semibold flex items-center justify-center">
+                        <i class="fab fa-google mr-2"></i> Google
+                    </button>
+                    <button type="button" class="social-login-btn py-3 rounded-lg font-semibold flex items-center justify-center">
+                        <i class="fab fa-facebook-f mr-2"></i> Facebook
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <span class="text-gray-600">Don't have an account? </span>
+                    <button type="button" onclick="switchToSignup()" class="text-[var(--primary-brown)] font-semibold hover:underline">Sign up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+            <button onclick="closeSignupModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold mb-2">Create an Account</h2>
+            <p class="text-gray-600 mb-6">Join thousands of marketers using GrowthOps</p>
+            
+            <form id="signup-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" placeholder="Your full name" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="signup-email">Email</label>
+                    <input type="email" id="signup-email" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" placeholder="Your email address" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="signup-password">Password</label>
+                    <div class="relative">
+                        <input type="password" id="signup-password" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" placeholder="Create a password" required>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <i class="far fa-eye-slash toggle-password cursor-pointer" id="toggle-signup-password"></i>
+                        </span>
+                    </div>
+                    <div class="password-strength mt-2">
+                        <div class="password-strength-meter" id="password-strength-meter"></div>
+                    </div>
+                    <div class="password-requirements mt-2">
+                        <p class="text-sm font-medium mb-2">Password must include:</p>
+                        <div class="requirement" id="req-length">
+                            <i class="fas fa-circle" style="font-size: 6px;"></i>
+                            <span>At least 8 characters</span>
+                        </div>
+                        <div class="requirement" id="req-uppercase">
+                            <i class="fas fa-circle" style="font-size: 6px;"></i>
+                            <span>One uppercase letter</span>
+                        </div>
+                        <div class="requirement" id="req-number">
+                            <i class="fas fa-circle" style="font-size: 6px;"></i>
+                            <span>One number</span>
+                        </div>
+                        <div class="requirement" id="req-special">
+                            <i class="fas fa-circle" style="font-size: 6px;"></i>
+                            <span>One special character</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mb-6">
+                    <label class="custom-checkbox flex items-center">
+                        <input type="checkbox" id="terms" required>
+                        <span class="checkmark"></span>
+                        <span class="ml-2 text-gray-700">I agree to the <a href="terms.html" class="text-[var(--primary-brown)] hover:underline">Terms of Service</a> and <a href="privacy.html" class="text-[var(--primary-brown)] hover:underline">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-semibold mb-6">
+                    Create Account
+                </button>
+                
+                <div class="text-center text-gray-600 mb-6">Or continue with</div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button type="button" class="social-login-btn py-3 rounded-lg font-semibold flex items-center justify-center">
+                        <i class="fab fa-google mr-2"></i> Google
+                    </button>
+                    <button type="button" class="social-login-btn py-3 rounded-lg font-semibold flex items-center justify-center">
+                        <i class="fab fa-facebook-f mr-2"></i> Facebook
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <span class="text-gray-600">Already have an account? </span>
+                    <button type="button" onclick="switchToLogin()" class="text-[var(--primary-brown)] font-semibold hover:underline">Log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden relative">
+            <button onclick="closeHelpModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <div class="p-6 border-b">
+                <h2 class="text-2xl font-bold">Help Center</h2>
+                <p class="text-gray-600">Find answers to common questions and get support</p>
+            </div>
+            
+            <div class="overflow-y-auto p-6" style="max-height: calc(80vh - 120px);">
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold mb-4">Frequently Asked Questions</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="faq-item border-b pb-4">
+                            <button class="flex justify-between items-center w-full text-left font-semibold" onclick="toggleFaq(this)">
+                                <span>How do I create an account?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer mt-2 text-gray-600 hidden">
+                                <p>To create an account, click on the "Sign Up" button in the top right corner of the page. Fill in your details and follow the instructions to complete your registration.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item border-b pb-4">
+                            <button class="flex justify-between items-center w-full text-left font-semibold" onclick="toggleFaq(this)">
+                                <span>How can I connect my social media accounts?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer mt-2 text-gray-600 hidden">
+                                <p>After logging in, go to your dashboard and click on "Connections". From there, you can connect your social media accounts by following the step-by-step instructions.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item border-b pb-4">
+                            <button class="flex justify-between items-center w-full text-left font-semibold" onclick="toggleFaq(this)">
+                                <span>What platforms do you support?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer mt-2 text-gray-600 hidden">
+                                <p>We currently support Instagram, Facebook, Twitter, LinkedIn, and Pinterest. We're constantly working to add more platforms.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item border-b pb-4">
+                            <button class="flex justify-between items-center w-full text-left font-semibold" onclick="toggleFaq(this)">
+                                <span>How does the AI content generator work?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer mt-2 text-gray-600 hidden">
+                                <p>Our AI analyzes successful content in your niche and generates suggestions based on proven engagement patterns. You can customize the generated content to match your brand voice.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item border-b pb-4">
+                            <button class="flex justify-between items-center w-full text-left font-semibold" onclick="toggleFaq(this)">
+                                <span>Can I schedule posts for multiple accounts?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer mt-2 text-gray-600 hidden">
+                                <p>Yes, you can manage and schedule posts for multiple accounts from different platforms all in one place.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Support</h3>
+                    <p class="text-gray-600 mb-4">Can't find what you're looking for? Our support team is here to help.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="bg-[var(--primary-brown)] text-white p-3 rounded-full w-12 h-12 flex items-center justify-center mb-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h4 class="font-bold mb-2">Email Us</h4>
+                            <p class="text-gray-600 mb-2">Send us an email and we'll respond within 24 hours.</p>
+                            <a href="mailto:support@growthops.com" class="text-[var(--primary-brown)] font-semibold">support@growthops.com</a>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="bg-[var(--primary-green)] text-white p-3 rounded-full w-12 h-12 flex items-center justify-center mb-3">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h4 class="font-bold mb-2">Live Chat</h4>
+                            <p class="text-gray-600 mb-2">Chat with our support team in real-time.</p>
+                            <button onclick="showToast('Live chat is available 9AM-5PM PST')" class="text-[var(--primary-brown)] font-semibold">Start Chat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+            <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+            
+            <form id="profile-form">
+                <div class="flex flex-col items-center mb-6">
+                    <div class="relative mb-4">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="Profile" class="w-24 h-24 rounded-full object-cover" id="profile-preview">
+                        <label for="profile-upload" class="absolute bottom-0 right-0 bg-[var(--primary-brown)] text-white p-2 rounded-full cursor-pointer">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="profile-upload" class="hidden" accept="image/*">
+                    </div>
+                    <p class="text-gray-600">Click camera icon to change photo</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="profile-name">Full Name</label>
+                    <input type="text" id="profile-name" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="Sarah Johnson" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="profile-email">Email</label>
+                    <input type="email" id="profile-email" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="sarah@example.com" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2" for="profile-bio">Bio</label>
+                    <textarea id="profile-bio" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" rows="3" placeholder="Tell us about yourself">Social media manager and content creator with 5+ years of experience. Passionate about helping brands tell their stories.</textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeProfileModal()" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">Operation completed successfully</span>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+            <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <h2 class="text-2xl font-bold mb-6">Settings</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-bold mb-4">Appearance</h3>
+                    <div class="flex items-center justify-between">
+                        <span>Dark Mode</span>
+                        <div id="settings-dark-mode-toggle" class="dark-mode-toggle active" onclick="toggleDarkMode()"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold mb-4">Notifications</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span>Email Notifications</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Push Notifications</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>SMS Notifications</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold mb-4">Language</h3>
+                    <select class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]">
+                        <option>English</option>
+                        <option>Spanish</option>
+                        <option>French</option>
+                        <option>German</option>
+                    </select>
+                </div>
+                
+                <div class="pt-4 border-t">
+                    <button class="text-red-600 font-semibold" onclick="showToast('Account deletion process started')">Delete Account</button>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button onclick="closeSettingsModal()" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true
+            });
+            
+            // Initialize dark mode
+            initDarkMode();
+            
+            // Create animated particles
+            createParticles();
+            
+            // Create welcome screen particles
+            createWelcomeParticles('welcome-particles');
+            createWelcomeParticles('welcome-back-particles');
+            
+            // Initialize countup animation
+            initCountUp();
+            
+            // Setup event listeners
+            setupEventListeners();
+            // Check if user is logged in
+            checkLoginStatus();
+        });
+        
+        // Dark Mode Functionality
+        function initDarkMode() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-toggle').classList.add('active');
+                document.getElementById('settings-dark-mode-toggle').classList.add('active');
+            }
+        }
+        
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const settingsDarkModeToggle = document.getElementById('settings-dark-mode-toggle');
+            
+            body.classList.toggle('dark-mode');
+            darkModeToggle.classList.toggle('active');
+            settingsDarkModeToggle.classList.toggle('active');
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+            
+            // Show toast notification
+            const mode = body.classList.contains('dark-mode') ? 'Dark' : 'Light';
+            showToast(`${mode} mode activated`);
+        }
+        
+        // Modal Functions
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+        
+        function openSignupModal() {
+            document.getElementById('signup-modal').classList.remove('hidden');
+        }
+        
+        function closeSignupModal() {
+            document.getElementById('signup-modal').classList.add('hidden');
+        }
+        
+        function openHelpModal() {
+            document.getElementById('help-modal').classList.remove('hidden');
+        }
+        
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.add('hidden');
+        }
+        
+        function openProfileModal() {
+            // Populate profile form with current user data
+            document.getElementById('profile-name').value = document.getElementById('profile-name').textContent;
+            document.getElementById('profile-email').value = localStorage.getItem('userEmail') || 'sarah@example.com';
+            
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+        
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+        
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+        
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+        
+        function switchToSignup() {
+            closeLoginModal();
+            setTimeout(openSignupModal, 300);
+        }
+        
+        function switchToLogin() {
+            closeSignupModal();
+            setTimeout(openLoginModal, 300);
+        }
+        
+        // Mobile Menu Functions
+        function openMobileMenu() {
+            document.getElementById('mobile-menu').classList.remove('translate-x-full');
+        }
+        
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('translate-x-full');
+        }
+        
+        // FAQ Toggle
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            
+            answer.classList.toggle('hidden');
+            button.querySelector('i').classList.toggle('fa-chevron-down');
+            button.querySelector('i').classList.toggle('fa-chevron-up');
+        }
+        
+        // Password Visibility Toggle
+        function setupEventListeners() {
+            // Toggle password visibility
+            document.getElementById('toggle-login-password').addEventListener('click', function() {
+                const passwordInput = document.getElementById('login-password');
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+            
+            document.getElementById('toggle-signup-password').addEventListener('click', function() {
+                const passwordInput = document.getElementById('signup-password');
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+            
+            // Password strength meter
+            document.getElementById('signup-password').addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+            
+            // Profile image upload preview
+            document.getElementById('profile-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('profile-preview').src = event.target.result;
+                        // Update profile image in navigation
+                        document.getElementById('profile-img').src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Form submissions
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simulateLogin();
+            });
+            
+            document.getElementById('signup-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                simulateSignup();
+            });
+            
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProfile();
+            });
+            
+            // Notification dropdowns
+            document.getElementById('notif-btn').addEventListener('click', function() {
+                document.getElementById('notif-dropdown').classList.toggle('hidden');
+                document.getElementById('rem-dropdown').classList.add('hidden');
+            });
+            
+            document.getElementById('rem-btn').addEventListener('click', function() {
+                document.getElementById('rem-dropdown').classList.toggle('hidden');
+                document.getElementById('notif-dropdown').classList.add('hidden');
+            });
+            
+            // Profile menu dropdown
+            document.getElementById('profile-menu-btn').addEventListener('click', function() {
+                document.getElementById('profile-menu').classList.toggle('hidden');
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#notif-btn') && !e.target.closest('#notif-dropdown')) {
+                    document.getElementById('notif-dropdown').classList.add('hidden');
+                }
+                
+                if (!e.target.closest('#rem-btn') && !e.target.closest('#rem-dropdown')) {
+                    document.getElementById('rem-dropdown').classList.add('hidden');
+                }
+                
+                if (!e.target.closest('#profile-menu-btn') && !e.target.closest('#profile-menu')) {
+                    document.getElementById('profile-menu').classList.add('hidden');
+                }
+            });
+            
+            // Mobile menu
+            document.getElementById('mobile-menu-button').addEventListener('click', openMobileMenu);
+            document.getElementById('close-mobile-menu').addEventListener('click', closeMobileMenu);
+        }
+        
+        // Password Strength Checker
+        function checkPasswordStrength(password) {
+            const strengthMeter = document.getElementById('password-strength-meter');
+            const requirements = {
+                length: document.getElementById('req-length'),
+                uppercase: document.getElementById('req-uppercase'),
+                number: document.getElementById('req-number'),
+                special: document.getElementById('req-special')
+            };
+            
+            let strength = 0;
+            let totalRequirements = 4;
+            let metRequirements = 0;
+            
+            // Check length
+            if (password.length >= 8) {
+                requirements.length.classList.add('met');
+                strength += 25;
+                metRequirements++;
+            } else {
+                requirements.length.classList.remove('met');
+            }
+            
+            // Check uppercase
+            if (/[A-Z]/.test(password)) {
+                requirements.uppercase.classList.add('met');
+                strength += 25;
+                metRequirements++;
+            } else {
+                requirements.uppercase.classList.remove('met');
+            }
+            
+            // Check number
+            if (/[0-9]/.test(password)) {
+                requirements.number.classList.add('met');
+                strength += 25;
+                metRequirements++;
+            } else {
+                requirements.number.classList.remove('met');
+            }
+            
+            // Check special character
+            if (/[^A-Za-z0-9]/.test(password)) {
+                requirements.special.classList.add('met');
+                strength += 25;
+                metRequirements++;
+            } else {
+                requirements.special.classList.remove('met');
+            }
+            
+            // Update strength meter
+            strengthMeter.style.width = strength + '%';
+            
+            // Set color based on strength
+            if (strength < 50) {
+                strengthMeter.style.backgroundColor = '#e53e3e'; // red
+            } else if (strength < 100) {
+                strengthMeter.style.backgroundColor = '#dd6b20'; // orange
+            } else {
+                strengthMeter.style.backgroundColor = '#38a169'; // green
+            }
+        }
+        
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Simulate Login
+    function simulateLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    // Check if user exists and password matches
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(user => user.email === email);
+    
+    if (!user) {
+        showToast('User not found. Please sign up first.');
+        return;
+    }
+    
+    if (user.password !== password) {
+        showToast('Incorrect password. Please try again.');
+        return;
+    }
+    
+    // Show loading state
+    const loginButton = document.querySelector('#login-form button[type="submit"]');
+    const originalText = loginButton.innerHTML;
+    loginButton.innerHTML = '<div class="spinner mx-auto"></div>';
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Hide login/signup buttons, show user profile
+        document.getElementById('login-button').classList.add('hidden');
+        document.getElementById('signup-button').classList.add('hidden');
+        document.getElementById('user-profile').classList.remove('hidden');
+        document.getElementById('notification-icons').classList.remove('hidden');
+        document.getElementById('reminder-icons').classList.remove('hidden');
+        
+        // Update profile name
+        document.getElementById('profile-name').textContent = user.name;
+        
+        // Store user data for profile
+    localStorage.setItem('currentUser', JSON.stringify({
+    email: email,
+    name: user.name || email.split('@')[0] // Use name if available, otherwise use email prefix
+    }));
+        
+        // Close modal
+        closeLoginModal();
+        
+        // Reset button
+        loginButton.innerHTML = originalText;
+        
+        // Show welcome back screen
+        document.getElementById('welcome-back-screen').classList.remove('hidden');
+        
+        // Show success toast
+        showToast('Login successful! Welcome back.');
+    }, 1500);
+
+
+            localStorage.setItem('userEmail', email);
+            // Store the name (using email prefix if no name is available)
+            const name = email.split('@')[0];
+            localStorage.setItem('userName', name.charAt(0).toUpperCase() + name.slice(1));
+        }
+        
+        // Simulate Signup
+function simulateSignup() {
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userExists = users.some(user => user.email === email);
+    
+    if (userExists) {
+        showToast('User with this email already exists');
+        return;
+    }
+    
+    // Show loading state
+    const signupButton = document.querySelector('#signup-form button[type="submit"]');
+    const originalText = signupButton.innerHTML;
+    signupButton.innerHTML = '<div class="spinner mx-auto"></div>';
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Store user data
+        const newUser = {
+            name: name,
+            email: email,
+            password: password // In a real app, this would be hashed
+        };
+        
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Hide login/signup buttons, show user profile
+        document.getElementById('login-button').classList.add('hidden');
+        document.getElementById('signup-button').classList.add('hidden');
+        document.getElementById('user-profile').classList.remove('hidden');
+        document.getElementById('notification-icons').classList.remove('hidden');
+        document.getElementById('reminder-icons').classList.remove('hidden');
+        
+        // Update profile name
+        document.getElementById('profile-name').textContent = name;
+        
+        // Store user data for profile
+        localStorage.setItem('currentUser', JSON.stringify({
+        email: email,
+        name: name // This should be from your signup form
+}));
+        
+        // Close modal
+        closeSignupModal();
+        
+        // Reset button
+        signupButton.innerHTML = originalText;
+        
+        // Show confetti
+        triggerConfetti();
+        
+        // Show welcome screen
+        document.getElementById('welcome-screen').classList.remove('hidden');
+        
+        // Show success toast
+        showToast('Account created successfully! Welcome to GrowthOps.');
+    }, 1500);
+
+                // In the simulateSignup() function, add these lines after the successful signup:
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', name); // Store the actual name from the signup form
+}
+        
+        // Save Profile
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value;
+            const email = document.getElementById('profile-email').value;
+            const bio = document.getElementById('profile-bio').value;
+            
+            // Update profile name
+            document.getElementById('profile-name').textContent = name;
+            
+            /// Store user data for profile
+            localStorage.setItem('currentUser', JSON.stringify({
+            email: email,
+            name: name // This should be from your signup form
+}));
+            
+            // Close modal
+            closeProfileModal();
+            
+            // Show success toast
+            showToast('Profile updated successfully!');
+        }
+        
+        // Logout
+function logout() {
+    // Hide user profile, show login/signup buttons
+    document.getElementById('user-profile').classList.add('hidden');
+    document.getElementById('notification-icons').classList.add('hidden');
+    document.getElementById('reminder-icons').classList.add('hidden');
+    document.getElementById('login-button').classList.remove('hidden');
+    document.getElementById('signup-button').classList.remove('hidden');
+    
+    // Close profile menu
+    document.getElementById('profile-menu').classList.add('hidden');
+    
+    // Clear stored user data
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('currentUser');
+    
+    // Show success toast
+    showToast('Logged out successfully');
+}
+// Check if user is logged in on page load
+function checkLoginStatus() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser) {
+        // User is logged in, update UI
+        document.getElementById('login-button').classList.add('hidden');
+        document.getElementById('signup-button').classList.add('hidden');
+        document.getElementById('user-profile').classList.remove('hidden');
+        document.getElementById('notification-icons').classList.remove('hidden');
+        document.getElementById('reminder-icons').classList.remove('hidden');
+        document.getElementById('profile-name').textContent = currentUser.name;
+    }
+}
+        
+        // Mark notifications as read
+        function markAllNotificationsAsRead() {
+            document.getElementById('notif-badge').classList.add('hidden');
+            document.getElementById('notif-dropdown').classList.add('hidden');
+            showToast('All notifications marked as read');
+        }
+        
+        function markAllRemindersAsRead() {
+            document.getElementById('rem-badge').classList.add('hidden');
+            document.getElementById('rem-dropdown').classList.add('hidden');
+            showToast('All reminders marked as read');
+        }
+        
+        // Confetti Effect
+        function triggerConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#8B5A2B', '#A67B5B', '#654321', '#6A8E61', '#8A9B68', '#465B38']
+            });
+        }
+        
+        // Welcome Screen Functions
+        function closeWelcomeScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+        }
+        
+        function closeWelcomeBackScreen() {
+            document.getElementById('welcome-back-screen').classList.add('hidden');
+        }
+        
+        // Create Animated Particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 20 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Random color
+                const colors = ['rgba(139, 90, 43, 0.2)', 'rgba(106, 142, 97, 0.2)', 'rgba(166, 123, 91, 0.2)'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = randomColor;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Create Welcome Screen Particles
+        function createWelcomeParticles(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('welcome-particle');
+                
+                // Random size
+                const size = Math.random() * 30 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Random color
+                const colors = ['rgba(139, 90, 43, 0.15)', 'rgba(106, 142, 97, 0.15)', 'rgba(166, 123, 91, 0.15)'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = randomColor;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // CountUp Animation with number formatting
+        function initCountUp() {
+            const counters = document.querySelectorAll('.countup');
+            const speed = 200;
+            
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText.replace(/,/g, '');
+                const increment = Math.ceil(target / speed);
+                
+                if (count < target) {
+                    let currentCount = count;
+                    const updateCount = () => {
+                        currentCount += increment;
+                        if (currentCount < target) {
+                            counter.innerText = formatNumberWithCommas(currentCount);
+                            setTimeout(updateCount, 1);
+                        } else {
+                            counter.innerText = formatNumberWithCommas(target);
+                        }
+                    };
+                    updateCount();
+                } else {
+                    counter.innerText = formatNumberWithCommas(target);
+                }
+            });
+        }
+        
+        // Format numbers with commas
+        function formatNumberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,3269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Smart Content Calendar</title>
+    <!-- Lux Bootstrap CSS -->
+    <link href="https://bootswatch.com/5/lux/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS for navbar styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ADD THESE CSS VARIABLES TO THE scheduler.html STYLE SECTION */
+        :root {
+            --primary-brown: #9C7C5B;    /* Warm medium brown */
+            --light-brown: #C8B6A6;      /* Light warm brown */
+            --dark-brown: #6D4C3D;       /* Dark warm brown */
+            --primary-green: #7A9D7E;
+            --light-green: #9BB99A;
+            --dark-green: #5A7D5C;
+            --cream: #F8F6F0;
+            --text-dark: #2D4A3B;
+            --text-medium: #5D6D7E;
+            --text-light: #85929E;
+            --bg-light: #f7fafc;
+            
+            --primary: #5a7247;      /* Muted green */
+            --primary-dark: #465b38;  /* Darker green */
+            --success: #8a9b68;       /* Light olive green */
+            --success-dark: #6e7d53;  /* Darker olive */
+            --warning: #b4a17b;       /* Tan/beige */
+            --danger: #a0522d;        /* Sienna brown */
+            --danger-dark: #854826;   /* Darker brown */
+            --dark: #3c3c3c;          /* Dark gray */
+            --light: #f8f6f2;         /* Light beige */
+            --gray: #9c9c9c;          /* Medium gray */
+            --accent: #7d8c5b;        /* Accent green */
+        }
+        
+        body {
+            background-color: #f8f6f2;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            color: #3c3c3c;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        
+        /* NEW: Navigation Styles */
+        .app-nav {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(90, 114, 71, 0.2);
+        }
+        
+        .app-nav-list {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 15px;
+        }
+        
+        .app-nav-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .app-nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .app-nav-item:hover:not(.active) {
+            background-color: rgba(90, 114, 71, 0.1);
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(90, 114, 71, 0.2);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(90, 114, 71, 0.15);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .time-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .time-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .time-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(90, 114, 71, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .time-item.selected {
+            border-color: var(--primary);
+            background: rgba(90, 114, 71, 0.1);
+        }
+        
+        .time-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .time-metric {
+            font-size: 0.9rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .platform-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .platform-twitter {
+            background: rgba(90, 114, 71, 0.15);
+            color: var(--primary);
+        }
+        
+        .platform-linkedin {
+            background: rgba(138, 155, 104, 0.15);
+            color: var(--success);
+        }
+        
+        .platform-facebook {
+            background: rgba(180, 161, 123, 0.15);
+            color: var(--warning);
+        }
+        
+        .platform-instagram {
+            background: rgba(160, 82, 45, 0.15);
+            color: var(--danger);
+        }
+        
+        .platform-tiktok {
+            background: rgba(125, 140, 91, 0.15);
+            color: var(--accent);
+        }
+        
+        .engagement {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+        
+        .engagement.high {
+            color: var(--success);
+        }
+        
+        .engagement.medium {
+            color: var(--warning);
+        }
+        
+        .engagement.low {
+            color: var(--danger);
+        }
+        
+        .platform-selectors {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .platform-selector {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .platform-selector.selected {
+            border-color: var(--primary);
+            background: rgba(90, 114, 71, 0.1);
+        }
+        
+        .platform-selector i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .ai-suggestion {
+            background: rgba(90, 114, 71, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: var(--dark);
+        }
+        
+        .calendar-view {
+            margin-top: 30px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            background-color: rgba(90, 114, 71, 0.1);
+            border-radius: 8px;
+        }
+        
+        .calendar-day {
+            background: white;
+            border-radius: 8px;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid rgba(90, 114, 71, 0.2);
+            position: relative;
+        }
+        
+        .calendar-day.other-month {
+            background-color: #f9fafb;
+            color: #9ca3af;
+        }
+        
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .calendar-event {
+            font-size: 0.75rem;
+            padding: 4px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .event-twitter {
+            background: rgba(90, 114, 71, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .event-linkedin {
+            background: rgba(138, 155, 104, 0.1);
+            border-left: 3px solid var(--success);
+        }
+        
+        .event-facebook {
+            background: rgba(180, 161, 123, 0.1);
+            border-left: 3px solid var(--warning);
+        }
+        
+        .event-instagram {
+            background: rgba(160, 82, 45, 0.1);
+            border-left: 3px solid var(--danger);
+        }
+        
+        .event-tiktok {
+            background: rgba(125, 140, 91, 0.1);
+            border-left: 3px solid var(--accent);
+        }
+        
+        .view-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(90, 114, 71, 0.1);
+            border-radius: 8px;
+            padding: 5px;
+            width: fit-content;
+        }
+        
+        .view-option {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .view-option.active {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: var(--primary);
+        }
+        
+        .card {
+            margin-bottom: 25px;
+            border: 1px solid rgba(90, 114, 71, 0.2);
+            box-shadow: 0 4px 6px rgba(90, 114, 71, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: rgba(90, 114, 71, 0.1);
+            border-bottom: 1px solid rgba(90, 114, 71, 0.2);
+            color: var(--primary);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--success);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(90, 114, 71, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .progress-bar {
+            background-color: var(--primary);
+        }
+        
+        .alert-warning {
+            background-color: rgba(180, 161, 123, 0.2);
+            border-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary);
+        }
+        
+        header {
+            background: linear-gradient(to right, rgba(90, 114, 71, 0.1), rgba(138, 155, 104, 0.1));
+            border: 1px solid rgba(90, 114, 71, 0.2);
+        }
+        
+        footer {
+            background-color: rgba(90, 114, 71, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            color: var(--dark);
+            margin-top: 40px;
+        }
+
+        /* New styles for post details modal */
+        .post-comments {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .comment {
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .comment-date {
+            color: var(--gray);
+        }
+        
+        .comment-text {
+            margin: 0;
+        }
+        
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value-sm {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .stat-label-sm {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .post-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-scheduled {
+            background: rgba(138, 155, 104, 0.2);
+            color: var(--success);
+        }
+        
+        .status-published {
+            background: rgba(90, 114, 71, 0.2);
+            color: var(--primary);
+        }
+        
+        .status-draft {
+            background: rgba(180, 161, 123, 0.2);
+            color: var(--warning);
+        }
+
+        /* NEW STYLES FOR REMINDER FEATURE */
+        .reminder-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(90, 114, 71, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(90, 114, 71, 0.1);
+        }
+        
+        .reminder-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .reminder-option {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .reminder-option.selected {
+            border-color: var(--primary);
+            background: rgba(90, 114, 71, 0.1);
+        }
+        
+        .reminder-option i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .custom-reminder {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* NEW STYLES FOR USER GUIDANCE */
+        .help-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        .tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1050;
+            display: none;
+        }
+        
+        .tour-popup {
+            position: absolute;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1060;
+        }
+        
+        .tour-popup h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .tour-popup p {
+            margin-bottom: 15px;
+        }
+        
+        .tour-navigation {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .tour-marker {
+            position: absolute;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 0 0 4px rgba(90, 114, 71, 0.3);
+            z-index: 1060;
+            pointer-events: none;
+        }
+        
+        .quick-tips {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(138, 155, 104, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .quick-tips h5 {
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .quick-tips ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .quick-tips li {
+            margin-bottom: 8px;
+        }
+
+        /* Modal styles */
+.fixed {
+    position: fixed;
+}
+
+.inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.bg-black {
+    background-color: #000;
+}
+
+.bg-opacity-50 {
+    --tw-bg-opacity: 0.5;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.z-50 {
+    z-index: 50;
+}
+
+.hidden {
+    display: none;
+}
+
+.rounded-2xl {
+    border-radius: 1rem;
+}
+
+.max-w-md {
+    max-width: 28rem;
+}
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.form-input {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    width: 100%;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 3px rgba(156, 124, 91, 0.1);
+}
+
+/* Toggle switch styles for settings */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.peer:checked ~ .peer-checked\:bg-\[var\(--primary-brown\)\] {
+    background-color: var(--primary-brown);
+}
+
+.peer:checked ~ .peer-checked\:after\:translate-x-full:after {
+    transform: translateX(100%);
+}
+
+.peer:checked ~ .peer-checked\:after\:border-white:after {
+    border-color: white;
+}
+
+        /* NEW: Responsive adjustments */
+        @media (max-width: 1200px) {
+            .platform-selector {
+                min-width: 80px;
+            }
+            
+            .reminder-option {
+                min-width: 100px;
+            }
+            
+            .app-nav-list {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .stat-card {
+                margin-bottom: 15px;
+            }
+            
+            .platform-selector {
+                min-width: 70px;
+                padding: 8px;
+            }
+            
+            .platform-selector i {
+                font-size: 1.2rem;
+            }
+            
+            .reminder-option {
+                min-width: 90px;
+                padding: 8px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .view-toggle {
+                width: 100%;
+            }
+            
+            .view-option {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .platform-selectors {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .platform-selector {
+                min-width: 80px;
+                flex: none;
+            }
+            
+            .reminder-options {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .reminder-option {
+                min-width: 80px;
+                flex: none;
+            }
+            
+            .time-list {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .app-nav-item {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Navbar styles from index.html */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+        
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Dark Mode Styles */
+        .dark-mode .navbar {
+            background: rgba(39, 55, 77, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            color: #E9ECEF;
+        }
+        
+        .dark-mode-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--primary-brown);
+        }
+
+        .dark-mode-toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle.active::after {
+            transform: translateX(24px);
+        }
+        
+        /* Mobile menu styles */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+        }
+        
+        #mobile-menu.show {
+            transform: translateX(0);
+        }
+        
+        .dark-mode #mobile-menu {
+            background-color: #1E2A3A;
+        }
+        .navbar .font-bold {
+    text-transform: none !important;
+        }
+        /* Remove gap above navbar */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Make navbar skinnier */
+.navbar {
+    padding-top: 0.95rem !important;
+    padding-bottom: 0.95rem !important;
+}
+</style>
+
+    </style>
+</head>
+<body>
+    <!-- Navigation bar from index.html -->
+    <nav class="navbar bg-white shadow-sm py-4 px-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center w-full">
+           <a href="login.html" class="text-xl font-bold text-[var(--primary-brown)] flex items-center">
+    <i class="fa-solid fa-seedling mr-2"></i>GrowthOps
+</a>
+            
+            <div class="hidden md:flex space-x-6">
+                <a href="login.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Home</a>
+                <a href="index.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">AI Content Generator</a>
+                <a href="scheduler.html" class="text-[var(--primary-brown)] font-medium border-b-2 border-[var(--primary-brown)]">Smart Scheduler</a>
+                <a href="sentiment_dashboard.html" class="text-gray-700 hover:text-[var(--primary-brown)] transition-colors">Performance Analytics</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Notification icons -->
+                <div class="relative" id="notification-icons">
+                    <button id="notif-btn" class="relative px-2">
+                        <i class="fas fa-bell text-gray-700 text-xl"></i>
+                        <span class="notification-badge" id="notif-badge">3</span>
+                    </button>
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 bg-white rounded-xl shadow-lg p-4 z-50 w-72">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold">Notifications</h4>
+                            <button class="text-xs text-[var(--primary-brown)] hover:underline" onclick="markAllNotificationsAsRead()">Mark all as read</button>
+                        </div>
+                        <ul class="text-sm space-y-2">
+                            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Post scheduling opened')">
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-[var(--primary-green)] mr-2 mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">3 posts scheduled for today</p>
+                                        <p class="text-gray-500 text-xs">2 hours ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('Analytics dashboard opened')">
+                                <div class="flex items-start">
+                                    <i class="fas fa-chart-line text-[var(--primary-brown)] mr-2 mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">Your engagement increased by 12% this week</p>
+                                        <p class="text-gray-500 text-xs">5 hours ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="notification-item p-2 rounded cursor-pointer" onclick="showToast('New features shown')">
+                                <div class="flex items-start">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-2 mt-1"></i>
+                                    <div>
+                                        <p class="font-medium">New AI feature available</p>
+                                        <p class="text-gray-500 text-xs">1 day ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                
+               <!-- User profile -->
+            <div class="user-profile relative" id="user-profile">
+            <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" alt="Guest" class="profile-img mr-2" id="profile-img">
+            <span id="profile-name" class="text-gray-700">User</span>
+            <button id="profile-menu-btn" class="ml-2 text-gray-600"><i class="fas fa-caret-down"></i></button>
+            <div id="profile-menu" class="absolute right-0 mt-2 bg-white rounded-xl shadow-lg p-2 hidden z-50" style="min-width:150px;">
+            <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+            <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+            <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+    </div>
+</div>
+                
+                <!-- Dark Mode Toggle -->
+                <div class="flex items-center mr-4">
+                    <span class="text-sm text-gray-600 mr-2 hidden md:inline">Dark</span>
+                    <div id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+                </div>
+                
+                <div class="md:hidden ml-4">
+                    <button id="mobile-menu-button" class="text-gray-700">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col items-center justify-center space-y-8 transform translate-x-full transition-transform duration-300 dark:bg-gray-900">
+        <button id="close-mobile-menu" class="absolute top-6 right-6 text-2xl text-gray-700 dark:text-gray-300">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <a href="login.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">Home</a>
+        <a href="index.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">AI Content Generator</a>
+        <a href="scheduler.html" class="text-2xl font-medium text-[var(--primary-brown)]">Smart Scheduler</a>
+        <a href="sentiment_dashboard.html" class="text-2xl font-medium text-gray-700 dark:text-gray-300">Performance Analytics</a>
+        
+        <div class="flex space-x-4 mt-8">
+            <button onclick="logout()" class="px-6 py-3 rounded-lg border border-[var(--primary-brown)] text-[var(--primary-brown)] dark:border-[var(--light-brown)] dark:text-[var(--light-brown)]">Logout</button>
+        </div>
+        
+        <!-- Add dark mode toggle to mobile menu -->
+        <div class="flex items-center mt-8">
+            <span class="text-lg text-gray-700 dark:text-gray-300 mr-4">Dark Mode</span>
+            <div id="mobile-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+        </div>
+    </div>
+
+<div class="container" style="margin-top: 20px; max-width: 1360px;">
+        <header class="p-4 rounded mb-4">
+            <h1 class="display-5 fw-bold"><i class="fas fa-brain me-2"></i> AI-Powered Content Calendar</h1>
+            <p class="lead">Leverage machine learning to optimize your content scheduling and maximize engagement</p>
+            
+            <div class="row g-3 mt-3">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Prediction Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-value">24.5%</div>
+                        <div class="stat-label">Avg. Engagement Increase</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Posts Optimized</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-value">3.2x</div>
+                        <div class="stat-label">ROI Improvement</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-calendar-alt me-2"></i> Schedule New Content</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="contentInput" class="form-label">Content</label>
+                            <textarea class="form-control" id="contentInput" rows="3" placeholder="What would you like to post?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Platforms</label>
+                            <div class="platform-selectors">
+                                <div class="platform-selector" data-platform="twitter">
+                                    <i class="fab fa-twitter"></i>
+                                    <div>Twitter</div>
+                                </div>
+                                <div class="platform-selector" data-platform="linkedin">
+                                    <i class="fab fa-linkedin"></i>
+                                    <div>LinkedIn</div>
+                                </div>
+                                <div class="platform-selector" data-platform="facebook">
+                                    <i class="fab fa-facebook"></i>
+                                    <div>Facebook</div>
+                                </div>
+                                <div class="platform-selector" data-platform="instagram">
+                                    <i class="fab fa-instagram"></i>
+                                    <div>Instagram</div>
+                                </div>
+                                <div class="platform-selector" data-platform="tiktok">
+                                    <i class="fab fa-tiktok"></i>
+                                    <div>TikTok</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="datetimePicker" class="form-label">Schedule Time</label>
+                            <input type="text" class="form-control" id="datetimePicker" placeholder="Select date & time">
+                        </div>
+                        
+                        <!-- NEW REMINDER SECTION -->
+                        <div class="reminder-section">
+                            <label class="form-label"><i class="fas fa-bell me-1"></i> Set Reminder</label>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="reminderToggle">
+                                <label class="form-check-label" for="reminderToggle">Enable reminders for this post</label>
+                            </div>
+                            
+                            <div id="reminderOptions" style="display: none;">
+                                <div class="reminder-options">
+                                    <div class="reminder-option" data-minutes="15">
+                                        <i class="fas fa-clock"></i>
+                                        <div>15 min before</div>
+                                    </div>
+                                    <div class="reminder-option" data-minutes="30">
+                                        <i class="fas fa-clock"></i>
+                                        <div>30 min before</div>
+                                    </div>
+                                    <div class="reminder-option" data-minutes="60">
+                                        <i class="fas fa-clock"></i>
+                                        <div>1 hour before</div>
+                                    </div>
+                                    <div class="reminder-option" data-minutes="1440">
+                                        <i class="fas fa-clock"></i>
+                                        <div>1 day before</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="custom-reminder" id="customReminder">
+                                    <div class="input-group mt-2">
+                                        <input type="number" class="form-control" id="customReminderValue" placeholder="Enter custom time" min="1">
+                                        <select class="form-select" id="customReminderUnit">
+                                            <option value="minutes">Minutes</option>
+                                            <option value="hours">Hours</option>
+                                            <option value="days">Days</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="autoReminders">
+                                    <label class="form-check-label" for="autoReminders">Set automatic reminders for all scheduled posts</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <strong><i class="fas fa-robot me-1"></i> AI Recommendation:</strong>
+                            <p id="aiSuggestionText" class="mb-0">Based on your audience's activity, we recommend posting on Thursday between 1:00 PM - 3:00 PM for maximum engagement.</p>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-primary" onclick="schedulePost()">
+                                <i class="fas fa-plus me-1"></i> Schedule Post
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="predictTimes()">
+                                <i class="fas fa-chart-line me-1"></i> Get AI Recommendations
+                            </button>
+                            <!-- NEW: Button to analyze sentiment -->
+                            <button class="btn btn-outline-success" onclick="analyzeSentiment()">
+                                <i class="fas fa-smile me-1"></i> Analyze Sentiment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-bullseye me-2"></i> Predicted Best Times</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="time-list" id="predictedTimes">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Performance Prediction</label>
+                            <div class="bg-light p-3 rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Estimated Engagement:</span>
+                                    <strong id="engagementPrediction">12.4%</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Expected Reach:</span>
+                                    <strong id="reachPrediction">8,500 users</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-clock me-2"></i> Scheduled Content</h2>
+                        <span class="clock" id="clock"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="view-toggle mb-3">
+                            <div class="view-option active" data-view="table">Table View</div>
+                            <div class="view-option" data-view="calendar">Calendar View</div>
+                        </div>
+                        
+                        <div id="tableView">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Content</th>
+                                            <th>Platform</th>
+                                            <th>Date & Time</th>
+                                            <th>Prediction</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="postsTable">
+                                        <!-- Will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div id="calendarView" style="display: none;">
+                            <div class="calendar-view">
+                                <div class="calendar-nav">
+                                    <h3 id="calendarMonth" class="h5 mb-0">August 2023</h3>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(-1)">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="goToToday()">
+                                            Today
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="changeMonth(1)">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="calendar-grid" id="calendarHeaders">
+                                    <!-- Day headers will be populated by JavaScript -->
+                                </div>
+                                
+                                <div class="calendar-grid" id="calendarDays">
+                                    <!-- Calendar days will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title h5 mb-0"><i class="fas fa-chart-pie me-2"></i> Content Analysis</h2>
+                    </div>
+                    <div class="card-body">
+<!-- NEW QUICK TIPS SECTION -->
+<div class="quick-tips">
+    <h5><i class="fas fa-lightbulb me-1"></i> Quick Navigation Tips</h5>
+    <ul>
+        <li>Use the <strong>AI Recommendations</strong> button to find optimal posting times</li>
+        <li>Set reminders to get notified before your posts go live</li>
+        <li>Switch between <strong>Table</strong> and <strong>Calendar</strong> views using the toggle</li>
+        <li>In Table view, use the <strong>Edit/Delete buttons</strong> at the end of each row to modify or remove scheduled posts</li>
+        <li>In Calendar view, click on any post to <strong>check records, view history, and add comments</strong></li>
+        <li>Click on any scheduled post to view detailed analytics</li>
+        <li>Use the help button <i class="fas fa-question-circle"></i> for guided tours</li>
+        <!-- NEW: Added sentiment analysis tip -->
+        <li>Use the <strong>Analyze Sentiment</strong> button to check the emotional tone of your content</li>
+    </ul>
+</div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Topic Distribution</label>
+                            <div class="progress mb-2" style="height: 30px;">
+                                <div class="progress-bar" style="width: 30%; background-color: #5a7247;">Product</div>
+                                <div class="progress-bar" style="width: 25%; background-color: #8a9b68;">Tips</div>
+                                <div class="progress-bar" style="width: 20%; background-color: #b4a17b;">Industry</div>
+                                <div class="progress-bar" style="width: 15%; background-color: #a0522d;">Company</div>
+                                <div class="progress-bar" style="width: 10%; background-color: #7d8c5b;">Other</div>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span>Product (30%)</span>
+                                <span>Tips (25%)</span>
+                                <span>Industry (20%)</span>
+                                <span>Company (15%)</span>
+                                <span>Other (10%)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Content Gap Alert</label>
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                You have limited content scheduled about <strong>product updates</strong> next week.
+                            </div>
+                        </div>
+
+                        <!-- NEW: Sentiment Preview Section -->
+                        <div class="mb-3" id="sentimentPreview" style="display: none;">
+                            <label class="form-label">Sentiment Analysis Preview</label>
+                            <div class="bg-light p-3 rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Sentiment Score:</span>
+                                    <strong id="sentimentScore">0.75 (Positive)</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Confidence:</span>
+                                    <strong id="sentimentConfidence">92%</strong>
+                                </div>
+                                <div class="mt-2">
+                                    <span>Key Emotions:</span>
+                                    <div class="d-flex gap-2 mt-1">
+                                        <span class="badge bg-success">Joy</span>
+                                        <span class="badge bg-primary">Trust</span>
+                                        <span class="badge bg-info">Anticipation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="text-center">
+            <p class="mb-0">AI-Powered Content Calendar v2.0 | Next-Gen Content Optimization</p>
+            <p class="small">© 2025 Content Intelligence Platform. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Scheduled Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="editContent" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editTime" class="form-label">Schedule Time</label>
+                        <input type="text" class="form-control" id="editTime">
+                    </div>
+                    
+                    <div class="ai-suggestion">
+                        <strong><i class="fas fa-robot me-1"></i> AI Recommendation:</strong>
+                        <p class="mb-0">Changing to Thursday at 2:30 PM could increase engagement by 24% based on similar past content.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger">Delete Post</button>
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Details Modal -->
+    <div class="modal fade" id="postDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Post Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="postDetailsContent">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveComment()">Save Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        Operation completed successfully!
+    </div>
+
+    <!-- NEW HELP BUTTON -->
+    <div class="help-button" onclick="startTour()">
+        <i class="fas fa-question"></i>
+    </div>
+
+    <!-- NEW TOUR OVERLAY -->
+    <div class="tour-overlay" id="tourOverlay">
+        <div class="tour-popup" id="tourPopup">
+            <h4 id="tourTitle">Welcome to the Content Calendar</h4>
+            <p id="tourText">This guided tour will show you how to use the key features of our AI-powered content calendar.</p>
+            <div class="tour-navigation">
+                <button class="btn btn-sm btn-outline-secondary" onclick="endTour()">Skip Tour</button>
+                <button class="btn btn-sm btn-primary" onclick="nextTourStep()">Next <i class="fas fa-arrow-right ms-1"></i></button>
+            </div>
+        </div>
+        <div class="tour-marker" id="tourMarker"></div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <script>
+        // Sample data for demonstration
+        let scheduledPosts = [
+            {
+                id: 1,
+                content: "Check out our new feature release! 🚀 #ProductUpdate",
+                platform: "twitter",
+                time: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                prediction: "14.2%",
+                comments: [
+                    { author: "You", date: new Date(Date.now() - 3600000).toISOString(), text: "This performed well last time we posted similar content." },
+                    { author: "Team", date: new Date(Date.now() - 1800000).toISOString(), text: "Let's add a visual to increase engagement." }
+                ],
+                actualEngagement: "15.8%",
+                clicks: 245,
+                shares: 32,
+                reminder: { enabled: true, minutes: 30 } // NEW: Added reminder data
+            },
+            {
+                id: 2,
+                content: "5 tips to improve your workflow with our tool",
+                platform: "linkedin",
+                time: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
+                prediction: "18.7%",
+                comments: [],
+                actualEngagement: "",
+                clicks: 0,
+                shares: 0,
+                reminder: { enabled: false, minutes: 0 } // NEW: Added reminder data
+            },
+            {
+                id: 3,
+                content: "Behind the scenes: How our team works remotely",
+                platform: "instagram",
+                time: new Date(Date.now() + 259200000).toISOString(), // In 3 days
+                prediction: "9.3%",
+                comments: [],
+                actualEngagement: "",
+                clicks: 0,
+                shares: 0,
+                reminder: { enabled: true, minutes: 60 } // NEW: Added reminder data
+            },
+            {
+                id: 4,
+                content: "Check out this viral trend! #tiktokchallenge",
+                platform: "tiktok",
+                time: new Date(Date.now() + 3 * 86400000 + 11 * 3600000).toISOString(), // In 3 days at 11 AM
+                prediction: "22.1%",
+                comments: [],
+                actualEngagement: "",
+                clicks: 0,
+                shares: 0,
+                reminder: { enabled: false, minutes: 0 } // NEW: Added reminder data
+            },
+            {
+                id: 5,
+                content: "Advertising",
+                platform: "facebook",
+                time: new Date(Date.now() + 3 * 86400000 + 11 * 3600000).toISOString(), // In 3 days at 11 AM
+                prediction: "11.8%",
+                comments: [],
+                actualEngagement: "",
+                clicks: 0,
+                shares: 0,
+                reminder: { enabled: true, minutes: 1440 } // NEW: Added reminder data
+            },
+            {
+                id: 6,
+                content: "Product launch announcement!",
+                platform: "twitter",
+                time: new Date(Date.now() - 2 * 86400000).toISOString(), // 2 days ago
+                prediction: "16.2%",
+                comments: [
+                    { author: "You", date: new Date(Date.now() - 86400000).toISOString(), text: "This post performed better than expected!" }
+                ],
+                actualEngagement: "18.5%",
+                clicks: 421,
+                shares: 56,
+                reminder: { enabled: true, minutes: 15 } // NEW: Added reminder data
+            },
+            {
+                id: 7,
+                content: "Customer success story",
+                platform: "linkedin",
+                time: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+                prediction: "13.5%",
+                comments: [],
+                actualEngagement: "12.2%",
+                clicks: 187,
+                shares: 24,
+                reminder: { enabled: false, minutes: 0 } // NEW: Added reminder data
+            }
+        ];
+
+        let predictedTimes = [
+            { time: new Date(Date.now() + 3600000).toISOString(), score: 92 }, // 1 hour from now
+            { time: new Date(Date.now() + 86400000 + 9 * 3600000).toISOString(), score: 88 }, // Tomorrow 9 AM
+            { time: new Date(Date.now() + 86400000 + 14 * 3600000).toISOString(), score: 95 }, // Tomorrow 2 PM
+            { time: new Date(Date.now() + 172800000 + 11 * 3600000).toISOString(), score: 90 }, // Day after tomorrow 11 AM
+            { time: new Date(Date.now() + 259200000 + 15 * 3600000).toISOString(), score: 87 } // In 3 days at 3 PM
+        ];
+
+        // NEW: Reminder settings
+        let autoReminders = false;
+        let reminderOptions = document.querySelectorAll('.reminder-option');
+        let reminderToggle = document.getElementById('reminderToggle');
+        let reminderOptionsContainer = document.getElementById('reminderOptions');
+        let customReminder = document.getElementById('customReminder');
+        let autoRemindersCheckbox = document.getElementById('autoReminders');
+
+        // NEW: Tour settings
+        let tourSteps = [
+            {
+                title: "Welcome to the Content Calendar",
+                text: "This guided tour will show you how to use the key features of our AI-powered content calendar.",
+                element: null,
+                position: "center"
+            },
+            {
+                title: "Schedule New Content",
+                text: "Start by writing your content here. You can type your post text or paste content from another source.",
+                element: "contentInput",
+                position: "top"
+            },
+            {
+                title: "Select Platforms",
+                text: "Choose which social media platforms you want to post to. You can select multiple platforms.",
+                element: ".platform-selectors",
+                position: "top"
+            },
+            {
+                title: "Set Schedule Time",
+                text: "Choose when you want your content to be published. Use the date and time picker to select the perfect time.",
+                element: "datetimePicker",
+                position: "top"
+            },
+            {
+                title: "Set Reminders",
+                text: "Enable reminders to get notified before your posts go live. You can choose from preset times or set custom reminders.",
+                element: ".reminder-section",
+                position: "top"
+            },
+            {
+                title: "AI Recommendations",
+                text: "Get AI-powered suggestions for the best times to post based on your audience's engagement patterns.",
+                element: ".btn-outline-primary",
+                position: "top"
+            },
+            {
+                title: "View Scheduled Content",
+                text: "See all your scheduled posts in either table view or calendar view. Switch between views using the toggle.",
+                element: "#tableView",
+                position: "left"
+            },
+            {
+                title: "Content Analysis",
+                text: "Get insights into your content strategy with analytics on topic distribution and performance predictions.",
+                element: ".quick-tips",
+                position: "top"
+            },
+            {
+                title: "Tour Complete",
+                text: "You're all set! Remember, you can always click the help button for a refresher. Happy scheduling!",
+                element: null,
+                position: "center"
+            }
+        ];
+        let currentTourStep = 0;
+
+        // DOM elements
+        const postsTable = document.getElementById("postsTable");
+        const predictedTimesContainer = document.getElementById("predictedTimes");
+        const clock = document.getElementById("clock");
+        const datetimePicker = document.getElementById("datetimePicker");
+        const notification = document.getElementById("notification");
+        const platformSelectors = document.querySelectorAll('.platform-selector');
+        const tableView = document.getElementById("tableView");
+        const calendarView = document.getElementById("calendarView");
+        const viewOptions = document.querySelectorAll('.view-option');
+        const calendarHeaders = document.getElementById("calendarHeaders");
+        const calendarDays = document.getElementById("calendarDays");
+        const calendarMonth = document.getElementById("calendarMonth");
+        const postDetailsModal = document.getElementById("postDetailsModal");
+        const postDetailsContent = document.getElementById("postDetailsContent");
+
+        // Calendar state
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        
+        // Currently selected post for details view
+        let selectedPost = null;
+
+        // Initialize platform selection
+        platformSelectors.forEach(selector => {
+            selector.addEventListener('click', () => {
+                platformSelectors.forEach(s => s.classList.remove('selected'));
+                selector.classList.add('selected');
+                predictTimes(); // Regenerate predictions when platform changes
+            });
+        });
+        async function predictTimes() {
+        // Show loading state
+            const button = document.querySelector('button[onclick="predictTimes()"]');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> Analyzing...';
+            button.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Generate sample best times
+                const times = [
+                    { time: "Tomorrow, 9:00 AM", metric: "87% engagement" },
+                    { time: "Thursday, 1:00 PM", metric: "92% engagement" },
+                    { time: "Friday, 3:30 PM", metric: "84% engagement" },
+                    { time: "Saturday, 11:00 AM", metric: "79% engagement" },
+                    { time: "Monday, 10:30 AM", metric: "89% engagement" }
+                ];
+                
+                const timesContainer = document.getElementById('predictedTimes');
+                timesContainer.innerHTML = '';
+                
+                times.forEach(time => {
+                    const timeItem = document.createElement('div');
+                    timeItem.className = 'time-item';
+                    timeItem.innerHTML = `
+                        <div class="time-value">${time.time}</div>
+                        <div class="time-metric">
+                            <i class="fas fa-chart-line"></i> ${time.metric}
+                        </div>
+                    `;
+                    timeItem.addEventListener('click', function() {
+                        document.querySelectorAll('.time-item').forEach(item => item.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('datetimePicker').value = 
+                            new Date(new Date().getTime() + (24 * 60 * 60 * 1000)).toISOString().split('T')[0] + ' 09:00';
+                    });
+                    
+                    timesContainer.appendChild(timeItem);
+                });
+                
+                // Update engagement prediction
+                document.getElementById('engagementPrediction').textContent = 
+                    (Math.random() * 5 + 10).toFixed(1) + '%';
+                
+                // Update reach prediction
+                document.getElementById('reachPrediction').textContent = 
+                    Math.floor(Math.random() * 5000 + 5000).toLocaleString() + ' users';
+                
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                showNotification('AI recommendations generated successfully!', 'success');
+            }, 1500);
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Help tour functionality
+        function showHelpTour() {
+            alert("Help tour would start here. This would guide you through the main features of the content scheduler.");
+            // In a real implementation, this would highlight different parts of the interface
+        }
+        
+        // NEW: Function to navigate between apps
+        function navigateTo(page) {
+            // In a real implementation, this would navigate to the specified page
+            // For this demo, we'll just show an alert
+            alert(`Navigating to ${page}`);
+            
+            // Save data to localStorage before navigating
+            savePostsToStorage();
+            
+            // In a real implementation, you would use:
+            // window.location.href = = page;
+        }
+
+
+        // NEW: Function to save posts to localStorage for dashboard integration
+        function savePostsToStorage() {
+            localStorage.setItem('scheduledPosts', JSON.stringify(scheduledPosts));
+        }
+        // NEW: Function to analyze sentiment of the current content
+        function analyzeSentiment() {
+            const content = document.getElementById('contentInput').value;
+            
+            if (!content) {
+                showNotification('Please enter some content to analyze sentiment.', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            const button = document.querySelector('button[onclick="analyzeSentiment()"]');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> Analyzing...';
+            button.disabled = true;
+        // Simulate API call delay
+            setTimeout(() => {
+                // Generate random sentiment score for demo (-1 to 1)
+                const score = (Math.random() * 2 - 1).toFixed(2);
+                
+                // Determine sentiment label
+                let sentiment, confidence, emotions;
+                if (score > 0.6) {
+                    sentiment = "Very Positive";
+                    confidence = (Math.random() * 10 + 85).toFixed(0); // 85-95%
+                    emotions = ["Joy", "Trust", "Anticipation"];
+                } else if (score > 0.2) {
+                    sentiment = "Positive";
+                    confidence = (Math.random() * 10 + 75).toFixed(0); // 75-85%
+                    emotions = ["Trust", "Anticipation", "Surprise"];
+                } else if (score > -0.2) {
+                    sentiment = "Neutral";
+                    confidence = (Math.random() * 10 + 70).toFixed(0); // 70-80%
+                    emotions = ["Neutral", "Anticipation", "Surprise"];
+                } else if (score > -0.6) {
+                    sentiment = "Negative";
+                    confidence = (Math.random() * 10 + 75).toFixed(0); // 75-85%
+                    emotions = ["Sadness", "Disgust", "Fear"];
+                } else {
+                    sentiment = "Very Negative";
+                    confidence = (Math.random() * 10 + 85).toFixed(0); // 85-95%
+                    emotions = ["Anger", "Disgust", "Fear"];
+                }
+        // Update sentiment preview
+                document.getElementById('sentimentScore').textContent = `${score} (${sentiment})`;
+                document.getElementById('sentimentConfidence').textContent = `${confidence}%`;
+                
+                // Update emotions badges
+                const emotionsContainer = document.querySelector('#sentimentPreview .d-flex.gap-2');
+                emotionsContainer.innerHTML = '';
+                emotions.forEach(emotion => {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-success';
+                    badge.textContent = emotion;
+                    emotionsContainer.appendChild(badge);
+                });
+                
+                // Show sentiment preview
+                document.getElementById('sentimentPreview').style.display = 'block';
+                
+                // Restore button
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                showNotification('Sentiment analysis completed!', 'success');
+            }, 1500);
+        }
+    
+        // NEW: Initialize reminder functionality
+        function initReminders() {
+            // Toggle reminder options
+            reminderToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    reminderOptionsContainer.style.display = 'block';
+                    // Select first option by default
+                    if (document.querySelector('.reminder-option.selected') === null) {
+                        document.querySelector('.reminder-option').classList.add('selected');
+                    }
+                } else {
+                    reminderOptionsContainer.style.display = 'none';
+                }
+            });
+
+            // Reminder option selection
+            reminderOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    reminderOptions.forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    customReminder.style.display = 'none';
+                });
+            });
+
+            // Custom reminder option
+            document.getElementById('customReminderValue').addEventListener('focus', () => {
+                reminderOptions.forEach(o => o.classList.remove('selected'));
+                customReminder.style.display = 'block';
+            });
+
+            // Auto reminders setting
+            autoRemindersCheckbox.addEventListener('change', function() {
+                autoReminders = this.checked;
+                if (autoReminders) {
+                    showNotification('Automatic reminders enabled for all posts');
+                }
+            });
+        }
+
+        // Initialize date/time picker
+        flatpickr(datetimePicker, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+            defaultDate: new Date(Date.now() + 86400000 + 14 * 3600000), // Default to tomorrow 2 PM
+            onChange: function(selectedDates, dateStr, instance) {
+                updatePredictionsForTime(selectedDates[0]);
+            }
+        });
+
+        // View toggle functionality
+        viewOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                viewOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                
+                if (option.dataset.view === 'table') {
+                    tableView.style.display = 'block';
+                    calendarView.style.display = 'none';
+                } else {
+                    tableView.style.display = 'none';
+                    calendarView.style.display = 'block';
+                    renderCalendar();
+                }
+            });
+        });
+
+        
+        // Set first platform as selected by default
+        document.querySelector('.platform-selector').classList.add('selected');
+
+        // Initialize the UI
+        renderScheduledPosts();
+        renderPredictedTimes();
+        updateClock();
+        setInterval(updateClock, 1000);
+        renderCalendarHeaders();
+        initReminders(); // NEW: Initialize reminders
+
+        // NEW: Check for upcoming reminders
+        setInterval(checkReminders, 60000); // Check every minute
+
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to update the clock
+        function updateClock() {
+            clock.textContent = new Date().toLocaleTimeString();
+        }
+
+        // Function to render scheduled posts
+        function renderScheduledPosts() {
+            postsTable.innerHTML = '';
+    
+            if (scheduledPosts.length === 0) {
+                postsTable.innerHTML = `
+                     <tr>
+                        <td colspan="5" class="text-center py-4">
+                            No posts scheduled yet. Add your first post!
+                        </td>
+                    </tr>
+        `           ;
+                return;
+            }
+    
+            // Sort posts by date
+            const sortedPosts = [...scheduledPosts].sort((a, b) => new Date(a.time) - new Date(b.time));
+    
+            sortedPosts.forEach((post, index) => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-post-id', post.id);
+        
+                // Format platform tag
+                const platformClass = `platform-${post.platform}`;
+                const platformName = post.platform.charAt(0).toUpperCase() + post.platform.slice(1);
+        
+                // Format engagement prediction
+                const engagementValue = parseFloat(post.prediction);
+                let engagementClass = 'medium';
+                if (engagementValue >= 15) engagementClass = 'high';
+                if (engagementValue < 10) engagementClass = 'low';
+        
+                // Check if post is in the past
+                const isPast = new Date(post.time) < new Date();
+                const statusIcon = isPast ? 'fa-check-circle' : 'fa-clock';
+                const statusColor = isPast ? 'var(--success)' : 'var(--warning)';
+        
+                // NEW: Add reminder icon if enabled
+                const reminderIcon = post.reminder && post.reminder.enabled ? 
+                    `<i class="fas fa-bell ms-2" style="color: var(--primary);" title="Reminder set"></i>` : '';
+        
+                row.innerHTML = `
+                    <td>${post.content}</td>
+                    <td><span class="platform-tag ${platformClass}">${platformName}</span></td>
+                    <td>
+                         <div class="d-flex align-items-center gap-2">
+                            <i class="fas ${statusIcon}" style="color: ${statusColor};"></i>
+                            ${new Date(post.time).toLocaleString()}
+                            ${reminderIcon}
+                        </div>
+                    </td>
+                <td>
+                    <div class="engagement ${engagementClass}">
+                        <i class="fas fa-chart-line"></i> ${post.prediction}
+                    </div>
+                </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="editPost(${index})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="deletePost(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+            postsTable.appendChild(row);
+        });
+    }
+    
+
+        // ======= REPLACE THIS FUNCTION =======
+function renderPredictedTimes() {
+  predictedTimesContainer.innerHTML = '';
+
+  predictedTimes.forEach((item, index) => {
+    const timeElement = document.createElement('div');
+    timeElement.className = 'time-item';
+
+    let dt = null;
+    if (item && item.time) {
+      const maybeDt = new Date(item.time);
+      if (!isNaN(maybeDt)) dt = maybeDt;
+    }
+    if (!dt && item && item.raw) {
+      const extracted = extractTimeFromLine(item.raw);
+      const base = (datetimePicker && datetimePicker._flatpickr.selectedDates[0]) ? datetimePicker._flatpickr.selectedDates[0] : new Date();
+      if (extracted) {
+        const parsed = timeStringToDate(extracted, base);
+        if (parsed && !isNaN(parsed)) dt = parsed;
+      }
+    }
+
+    let timeLabel = 'Invalid Date';
+    let dateLabel = '';
+    if (dt) {
+      timeLabel = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      dateLabel = dt.toLocaleDateString();
+    } else {
+      const raw = item.raw || item.time || '';
+      timeLabel = raw.replace(/^\d+\.\s*/, '').trim();
+    }
+
+    const scoreLabel = (typeof item.score !== 'undefined') ? `${item.score}% Match` : '';
+
+    timeElement.innerHTML = `
+      <div class="time-value">${timeLabel}</div>
+      <div>${dateLabel}</div>
+      <div class="time-metric"><i class="fas fa-bolt"></i> ${scoreLabel}</div>
+    `;
+
+    timeElement.addEventListener('click', () => {
+      if (dt && datetimePicker && datetimePicker._flatpickr) {
+        datetimePicker._flatpickr.setDate(dt);
+        document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
+        timeElement.classList.add('selected');
+        updatePredictionsForTime(dt);
+      }
+    });
+
+    predictedTimesContainer.appendChild(timeElement);
+  });
+}
+
+// ======= NEW FUNCTION =======
+function updateAISummary() {
+  if (!predictedTimes || predictedTimes.length === 0) return;
+  const best = predictedTimes.reduce((a,b)=> (a.score > b.score ? a : b));
+
+  let bestDate = null;
+  if (best && best.time) {
+    const maybeDt = new Date(best.time);
+    if (!isNaN(maybeDt)) bestDate = maybeDt;
+  }
+
+  if (!bestDate) {
+    document.getElementById("aiSuggestionText").textContent =
+      "AI Recommendation: " + (best.raw || best.time);
+    return;
+  }
+
+  const endDate = new Date(bestDate.getTime() + (3 * 60 * 60 * 1000));
+  const startLabel = bestDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const endLabel   = endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateLabel  = bestDate.toLocaleDateString();
+  const platform = document.querySelector('.platform-selector.selected')?.dataset.platform || "your audience";
+
+  document.getElementById("aiSuggestionText").textContent =
+    `AI Recommendation: Based on your ${platform} audience's activity, we recommend posting on ${dateLabel} between ${startLabel} - ${endLabel} for maximum engagement.`;
+}
+
+        // Function to render calendar headers
+        function renderCalendarHeaders() {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            calendarHeaders.innerHTML = '';
+            
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day-header';
+                dayElement.textContent = day;
+                calendarHeaders.appendChild(dayElement);
+            });
+        }
+
+        // Function to render calendar
+        function renderCalendar() {
+            calendarDays.innerHTML = '';
+            calendarMonth.textContent = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDay = firstDay.getDay();
+            
+            // Previous month days
+            const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `<div class="day-number">${prevMonthLastDay - i}</div>`;
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // Current month days
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Check if this is today
+                if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                    dayElement.style.border = '2px solid var(--primary)';
+                }
+                
+                dayElement.innerHTML = `<div class="day-number">${i}</div>`;
+                
+                // Add events for this day
+                const dayDate = new Date(currentYear, currentMonth, i);
+                const dayPosts = scheduledPosts.filter(post => {
+                    const postDate = new Date(post.time);
+                    return postDate.getDate() === i && 
+                            postDate.getMonth() === currentMonth && 
+                            postDate.getFullYear() === currentYear;
+                });
+                
+                dayPosts.forEach(post => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = `calendar-event event-${post.platform}`;
+                    eventElement.title = post.content;
+                    eventElement.innerHTML = `
+                        <i class="fab fa-${post.platform}"></i> 
+                        ${post.content.substring(0, 15)}${post.content.length > 15 ? '...' : ''}
+                    `;
+                    // Add click event to show post details
+                    eventElement.addEventListener('click', () => {
+                        showPostDetails(post);
+                    });
+                    dayElement.appendChild(eventElement);
+                });
+                
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // Next month days
+            const daysNeeded = 42 - (startDay + daysInMonth); // 6 rows of 7 days
+            for (let i = 1; i <= daysNeeded; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `<div class="day-number">${i}</div>`;
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        // Function to change month
+        function changeMonth(direction) {
+            currentMonth += direction;
+            
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            renderCalendar();
+        }
+
+        // Function to go to today
+        function goToToday() {
+            currentDate = new Date();
+            currentMonth = currentDate.getMonth();
+            currentYear = currentYear;
+            renderCalendar();
+        }
+
+        // Function to show post details
+        function showPostDetails(post) {
+            selectedPost = post;
+            
+            // Format platform tag
+            const platformClass = `platform-${post.platform}`;
+            const platformName = post.platform.charAt(0).toUpperCase() + post.platform.slice(1);
+            
+            // Check if post is in the past
+            const isPast = new Date(post.time) < new Date();
+            const statusText = isPast ? 'Published' : 'Scheduled';
+            const statusClass = isPast ? 'status-published' : 'status-scheduled';
+            
+            // Format engagement
+            const engagementValue = parseFloat(isPast ? (post.actualEngagement || post.prediction) : post.prediction);
+            let engagementClass = 'medium';
+            if (engagementValue >= 15) engagementClass = 'high';
+            if (engagementValue < 10) engagementClass = 'low';
+            
+            // NEW: Format reminder info
+            let reminderInfo = '';
+            if (post.reminder && post.reminder.enabled) {
+                let reminderText = '';
+                if (post.reminder.minutes < 60) {
+                    reminderText = `${post.reminder.minutes} minutes before`;
+                } else if (post.reminder.minutes < 1440) {
+                    reminderText = `${Math.floor(post.reminder.minutes / 60)} hours before`;
+                } else {
+                    reminderText = `${Math.floor(post.reminder.minutes / 1440)} days before`;
+                }
+                reminderInfo = `<p><i class="fas fa-bell me-1"></i> Reminder set for ${reminderText}</p>`;
+            }
+
+            // Save to localStorage for dashboard integration
+            savePostsToStorage();
+    
+            renderScheduledPosts(); // Changed from renderPostsTable
+            if (document.getElementById('calendarView').style.display !== 'none') {
+            renderCalendar();
+            }
+    
+        document.getElementById('contentInput').value = '';
+        document.getElementById('datetimePicker').value = '';
+    
+        showNotification('Post scheduled successfully!', 'success');
+    
+        // NEW: After scheduling, update sentiment preview
+        analyzeSentiment();
+        
+
+            
+            // Build post details HTML
+            let html = `
+                <div class="mb-3">
+                    <span class="platform-tag ${platformClass}">${platformName}</span>
+                    <span class="post-status ${statusClass} ms-2">${statusText}</span>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Content</h6>
+                    <p>${post.content}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Scheduled Time</h6>
+                    <p>${new Date(post.time).toLocaleString()}</p>
+                    ${reminderInfo}
+                </div>
+                
+                <div class="post-stats">
+                    <div class="stat-item">
+                        <div class="stat-value-sm">${engagementValue}%</div>
+                        <div class="stat-label-sm">Engagement</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value-sm">${post.clicks}</div>
+                        <div class="stat-label-sm">Clicks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value-sm">${post.shares}</div>
+                        <div class="stat-label-sm">Shares</div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Comments</h6>
+                    <div class="post-comments" id="postComments">
+            `;
+            
+            if (post.comments && post.comments.length > 0) {
+                post.comments.forEach(comment => {
+                    html += `
+                        <div class="comment">
+                            <div class="comment-header">
+                                <span class="comment-author">${comment.author}</span>
+                                <span class="comment-date">${new Date(comment.date).toLocaleString()}</span>
+                            </div>
+                            <p class="comment-text">${comment.text}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p class="text-muted">No comments yet.</p>`;
+            }
+            
+            html += `
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Add Comment</h6>
+                    <textarea class="form-control" id="newComment" rows="3" placeholder="Add a comment for reference..."></textarea>
+                </div>
+            `;
+            
+            postDetailsContent.innerHTML = html;
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(postDetailsModal);
+            modal.show();
+            }
+
+        // Function to save a comment
+        function saveComment() {
+            if (!selectedPost) return;
+            
+            const commentText = document.getElementById('newComment').value.trim();
+            if (!commentText) {
+                showNotification('Please enter a comment', 'error');
+                return;
+            }
+            
+            // Add comment to the post
+            if (!selectedPost.comments) selectedPost.comments = [];
+            
+            selectedPost.comments.push({
+                author: 'You',
+                date: new Date().toISOString(),
+                text: commentText
+            });
+            
+            // Update the UI
+            const commentsContainer = document.getElementById('postComments');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+                <div class="comment-header">
+                    <span class="comment-author">You</span>
+                    <span class="comment-date">Just now</span>
+                </div>
+                <p class="comment-text">${commentText}</p>
+            `;
+            commentsContainer.appendChild(newComment);
+            
+            // Clear the textarea
+            document.getElementById('newComment').value = '';
+            
+            showNotification('Comment added successfully');
+        }
+
+      // ======= FINAL AI-BASED PREDICTION =======
+async function predictTimes() {
+  const button = (typeof event !== 'undefined' && event && event.target) 
+    ? event.target 
+    : document.querySelector('button[onclick="predictTimes()"]');
+  const originalText = button ? button.innerHTML : 'Analyzing...';
+  if (button) { button.innerHTML = '<div class="loading"></div> Analyzing...'; button.disabled = true; }
+
+  const platform = document.querySelector('.platform-selector.selected')?.dataset.platform || "general";
+  const selectedFlat = (datetimePicker && datetimePicker._flatpickr && datetimePicker._flatpickr.selectedDates[0]) 
+    ? datetimePicker._flatpickr.selectedDates[0] 
+    : null;
+  const baseDate = selectedFlat 
+    ? new Date(selectedFlat.getFullYear(), selectedFlat.getMonth(), selectedFlat.getDate()) 
+    : new Date();
+
+  const prompt = `
+You are a social media scheduling assistant.
+The user is considering posting around ${baseDate.toDateString()} for platform "${platform}".
+
+Analyze audience engagement and suggest the 3 BEST posting slots within ±3 days of that date.
+Rules:
+- Each suggestion must include a FULL DATE and TIME (e.g., "Aug 31, 2025 08:30 AM – reason").
+- Times can be any hour in the 24h cycle (you decide the best).
+- Give exactly 3 numbered suggestions, no extra commentary.
+`;
+
+  try {
+    document.getElementById("aiSuggestionText").textContent = "AI is analyzing best times...";
+    const response = await callGemini(prompt, 0.9);
+
+    const lines = response.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    const newPreds = [];
+
+    lines.forEach((line) => {
+      const dtCandidate = extractDateTimeFromLine(line);
+      if (dtCandidate && !isNaN(dtCandidate)) {
+        newPreds.push({ time: dtCandidate.toISOString(), score: Math.round(75 + Math.random() * 20), raw: line });
+      } else {
+        const timeCandidate = extractTimeFromLine(line);
+        if (timeCandidate) {
+          const parsed = timeStringToDate(timeCandidate, baseDate);
+          if (parsed && !isNaN(parsed)) {
+            newPreds.push({ time: parsed.toISOString(), score: Math.round(70 + Math.random() * 20), raw: line });
+            return;
+          }
+        }
+        newPreds.push({ time: line, score: Math.round(70 + Math.random() * 20), raw: line });
+      }
+    });
+
+    if (newPreds.length > 0) {
+      predictedTimes = newPreds;
+    } else {
+      showNotification('AI returned no suggestions; keeping previous predictions', 'warning');
+    }
+
+    renderPredictedTimes();
+    updateAISummary();
+
+  } catch (err) {
+    console.error('predictTimes error', err);
+    document.getElementById("aiSuggestionText").textContent = "AI prediction failed: " + (err.message || err);
+    showNotification('AI prediction failed. See console for details', 'error');
+  } finally {
+    if (button) { button.innerHTML = originalText; button.disabled = false; }
+  }
+}
+
+        // Function to update predictions for a specific time
+        function updatePredictionsForTime(selectedTime) {
+            // Simulate AI calculating engagement based on time
+            const hour = selectedTime.getHours();
+            
+            // Engagement is typically higher during business hours
+            let engagementScore = 8.5; // Base score
+            
+            if (hour >= 9 && hour <= 11) engagementScore = 12.4; // Late morning
+            if (hour >= 12 && hour <= 13) engagementScore = 10.2; // Lunch
+            if (hour >= 14 && hour <= 16) engagementScore = 15.7; // Afternoon
+            if (hour >= 17 && hour <= 19) engagementScore = 13.1; // Evening
+            if (hour >= 20 || hour <= 8) engagementScore = 7.3; // Night
+            
+            // Add some random variation for realism
+            engagementScore += (Math.random() * 4 - 2);
+            engagementScore = Math.round(engagementScore * 10) / 10;
+            
+            // Update the prediction displays
+            document.getElementById('engagementPrediction').textContent = `${engagementScore}%`;
+            
+            // Calculate estimated reach (simulated)
+            const reach = Math.round(5000 + (engagementScore * 300));
+            document.getElementById('reachPrediction').textContent = `${reach.toLocaleString()} users`;
+        }
+
+        // Function to schedule a new post
+        function schedulePost() {
+            const content = document.getElementById('contentInput').value;
+            const selectedTime = datetimePicker.value;
+            const selectedPlatform = document.querySelector('.platform-selector.selected').dataset.platform;
+            
+            if (!content || !selectedTime) {
+                showNotification('Please add content and select a time', 'error');
+                return;
+            }
+            
+            // NEW: Get reminder settings
+            const reminderEnabled = document.getElementById('reminderToggle').checked;
+            let reminderMinutes = 0;
+            
+            if (reminderEnabled) {
+                const selectedOption = document.querySelector('.reminder-option.selected');
+                if (selectedOption) {
+                    reminderMinutes = parseInt(selectedOption.dataset.minutes);
+                } else {
+                    // Custom reminder
+                    const customValue = parseInt(document.getElementById('customReminderValue').value);
+                    const customUnit = document.getElementById('customReminderUnit').value;
+                    
+                    if (isNaN(customValue) || customValue <= 0) {
+                        showNotification('Please enter a valid custom reminder time', 'error');
+                        return;
+                    }
+                    
+                    if (customUnit === 'minutes') {
+                        reminderMinutes = customValue;
+                    } else if (customUnit === 'hours') {
+                        reminderMinutes = customValue * 60;
+                    } else if (customUnit === 'days') {
+                        reminderMinutes = customValue * 1440;
+                    }
+                }
+            }
+            
+            // Create new post object
+            const newPost = {
+                id: scheduledPosts.length + 1,
+                content: content,
+                platform: selectedPlatform,
+                time: new Date(selectedTime).toISOString(),
+                prediction: document.getElementById('engagementPrediction').textContent,
+                comments: [],
+                actualEngagement: "",
+                clicks: 0,
+                shares: 0,
+                reminder: { // NEW: Added reminder data
+                    enabled: reminderEnabled,
+                    minutes: reminderMinutes
+                }
+            };
+            
+            // Add to our array
+            scheduledPosts.push(newPost);
+            
+            // NEW: Set reminder if enabled
+            if (reminderEnabled) {
+                setReminder(newPost);
+            }
+            
+            // Update UI
+            renderScheduledPosts();
+            renderCalendar();
+            
+            // Clear form
+            document.getElementById('contentInput').value = '';
+            document.getElementById('reminderToggle').checked = false;
+            reminderOptionsContainer.style.display = 'none';
+            
+            showNotification('Post scheduled successfully!' + (reminderEnabled ? ' Reminder set.' : ''));
+            
+            // Add this function to broadcast changes to the dashboard
+            function broadcastSchedulerUpdate() {
+                // Save to localStorage (already exists)
+                savePostsToStorage();
+                
+                // Create a custom event to notify other tabs/pages
+                const event = new CustomEvent('schedulerUpdated', {
+                    detail: { timestamp: new Date().getTime() }
+                });
+                window.dispatchEvent(event);
+                
+                // Also use localStorage as a communication channel
+                localStorage.setItem('schedulerLastUpdate', new Date().getTime());
+            }
+
+            // In schedulePost() function, add this line at the end:
+            broadcastSchedulerUpdate();
+        
+        }
+
+        // NEW: Function to set a reminder
+        function setReminder(post) {
+            const postTime = new Date(post.time);
+            const reminderTime = new Date(postTime.getTime() - post.reminder.minutes * 60000);
+            
+            // In a real application, you would set up a proper notification system
+            // For this demo, we'll just log it and show a notification when the time comes
+            console.log(`Reminder set for post "${post.content}" at ${reminderTime}`);
+            
+            // Store the reminder for checking later
+            if (!post.reminder) post.reminder = {};
+            post.reminder.time = reminderTime.toISOString();
+            post.reminder.notified = false;
+        }
+
+        // NEW: Function to check for upcoming reminders
+        function checkReminders() {
+            const now = new Date();
+            
+            scheduledPosts.forEach(post => {
+                if (post.reminder && post.reminder.enabled && post.reminder.time && !post.reminder.notified) {
+                    const reminderTime = new Date(post.reminder.time);
+                    if (now >= reminderTime) {
+                        // Show notification
+                        showNotification(`Reminder: Your post "${post.content}" is scheduled to go live soon!`, 'warning');
+                        
+                        // Mark as notified
+                        post.reminder.notified = true;
+                    }
+                }
+            });
+        }
+
+        // Function to edit a post
+        function editPost(index) {
+            // For a real implementation, this would open a modal with the post details
+            const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show();
+        }
+
+        // Function to delete a post 
+        function deletePost(index) {
+            // Get the post ID from the table row to ensure we delete the correct post
+            const tableRows = document.querySelectorAll('#postsTable tr');
+            if (index >= tableRows.length) return;
+            
+            // Extract the post ID from the data attribute we'll add
+            const postId = parseInt(tableRows[index].getAttribute('data-post-id'));
+            
+            if (confirm('Are you sure you want to delete this scheduled post?')) {
+                // Find the post by ID instead of by index
+                const postIndex = scheduledPosts.findIndex(post => post.id === postId);
+                
+                if (postIndex !== -1) {
+                    scheduledPosts.splice(postIndex, 1);
+                    renderScheduledPosts();
+                    renderCalendar();
+                    broadcastSchedulerUpdate(); // Notify dashboard of the update
+                    showNotification('Post deleted successfully');
+                }
+            }
+        }
+
+        // NEW: Function to start the guided tour
+        function startTour() {
+            currentTourStep = 0;
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTourStep();
+        }
+
+        // NEW: Function to show the current tour step
+        function showTourStep() {
+            const step = tourSteps[currentTourStep];
+            const popup = document.getElementById('tourPopup');
+            const marker = document.getElementById('tourMarker');
+            
+            document.getElementById('tourTitle').textContent = step.title;
+            document.getElementById('tourText').textContent = step.text;
+            
+            if (step.element) {
+                let element;
+                if (step.element.startsWith('.') || step.element.startsWith('#')) {
+                    element = document.querySelector(step.element);
+                } else {
+                    element = document.getElementById(step.element);
+                }
+                
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    
+                    // Position the marker
+                    marker.style.width = `${rect.width}px`;
+                    marker.style.height = `${rect.height}px`;
+                    marker.style.top = `${rect.top}px`;
+                    marker.style.left = `${rect.left}px`;
+                    marker.style.display = 'block';
+                    
+                    // Position the popup
+                    switch(step.position) {
+                        case 'top':
+                            popup.style.top = `${rect.top - popup.offsetHeight - 20}px`;
+                            popup.style.left = `${rect.left + (rect.width/2) - (popup.offsetWidth/2)}px`;
+                            break;
+                        case 'bottom':
+                            popup.style.top = `${rect.bottom + 20}px`;
+                            popup.style.left = `${rect.left + (rect.width/2) - (popup.offsetWidth/2)}px`;
+                            break;
+                        case 'left':
+                            popup.style.top = `${rect.top + (rect.height/2) - (popup.offsetHeight/2)}px`;
+                            popup.style.left = `${rect.left - popup.offsetWidth - 20}px`;
+                            break;
+                        case 'right':
+                            popup.style.top = `${rect.top + (rect.height/2) - (popup.offsetHeight/2)}px`;
+                            popup.style.left = `${rect.right + 20}px`;
+                            break;
+                        default:
+                            popup.style.top = '50%';
+                            popup.style.left = '50%';
+                            popup.style.transform = 'translate(-50%, -50%)';
+                    }
+                    
+                    // Ensure popup stays within viewport
+                    const popupRect = popup.getBoundingClientRect();
+                    if (popupRect.top < 20) popup.style.top = '20px';
+                    if (popupRect.bottom > window.innerHeight - 20) popup.style.top = `${window.innerHeight - popupRect.height - 20}px`;
+                    if (popupRect.left < 20) popup.style.left = '20px';
+                    if (popupRect.right > window.innerWidth - 20) popup.style.left = `${window.innerWidth - popupRect.width - 20}px`;
+                }
+            } else {
+                // Center the popup for steps without a specific element
+                marker.style.display = 'none';
+                popup.style.top = '50%';
+                popup.style.left = '50%';
+                popup.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            // Update navigation button
+            const nextButton = popup.querySelector('.btn-primary');
+            if (currentTourStep === tourSteps.length - 1) {
+                nextButton.innerHTML = 'Finish <i class="fas fa-check ms-1"></i>';
+            } else {
+                nextButton.innerHTML = 'Next <i class="fas fa-arrow-right ms-1"></i>';
+            }
+        }
+
+        // NEW: Function to go to the next tour step
+        function nextTourStep() {
+            currentTourStep++;
+            if (currentTourStep >= tourSteps.length) {
+                endTour();
+            } else {
+                showTourStep();
+            }
+        }
+
+        // NEW: Function to end the tour
+        function endTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourMarker').style.display = 'none';
+            // Save that the user has completed the tour
+            localStorage.setItem('tourCompleted', 'true');
+        }
+
+        // Initialize with some predictions for the default time
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultTime = datetimePicker._flatpickr.selectedDates[0];
+            if (defaultTime) {
+                updatePredictionsForTime(defaultTime);
+            }
+            
+            // NEW: Check if this is the first visit or if tour was not completed
+            if (!localStorage.getItem('tourCompleted')) {
+                setTimeout(startTour, 1000);
+            }
+            // Load user profile data
+            loadUserProfile();
+
+            updateUserProfile();
+        });
+        // ================== LOAD GENERATED CONTENT FROM LOCALSTORAGE ==================
+document.addEventListener('DOMContentLoaded', () => {
+  const generated = localStorage.getItem('generatedContent');
+  if (generated) {
+    // Pre-fill the content box
+    document.getElementById('contentInput').value = generated;
+
+    // (Optional) also use metadata
+    const meta = localStorage.getItem('generatedMeta');
+    if (meta) {
+      try {
+        const parsed = JSON.parse(meta);
+        console.log("Content meta:", parsed);
+        // You could do more here: auto-select platform, adjust AI suggestion, etc.
+      } catch (e) {}
+    }
+
+    // Clear it so it doesn't show again on next load
+    localStorage.removeItem('generatedContent');
+    localStorage.removeItem('generatedMeta');
+  }
+});
+// ========== GEMINI API CONFIG ==========
+const GEMINI_API_KEY = "AIzaSyAKwpMRf_ToLZ8QEuDGSz02u_pKRGopUj8"; 
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+async function callGemini(prompt, temperature=0.7){
+  const res = await fetch(GEMINI_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      contents:[{parts:[{text: prompt}]}],
+      generationConfig:{temperature, maxOutputTokens:512, topP:0.8, topK:40}
+    })
+  });
+  if(!res.ok){
+    let err="API error";
+    try{const j=await res.json(); err=j.error?.message || err;}catch{}
+    throw new Error(err);
+  }
+  const data = await res.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+// ======= Helpers to parse time strings from Gemini's natural text =======
+ // ======= ADD THIS FUNCTION RIGHT AFTER extractTimeFromLine() / timeStringToDate() =======
+function extractDateTimeFromLine(line) {
+  if (!line) return null;
+
+  // 1) Try "MonthName DD, YYYY HH:MM AM/PM" (e.g. "Aug 31, 2025 08:30 AM" or "August 31 2025 8:30 PM")
+  let m = line.match(/([A-Za-z]{3,9}\s+\d{1,2},?\s*\d{4})\s+(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)/);
+  if (m) {
+    const candidate = `${m[1]} ${m[2]}`;
+    const dt = new Date(candidate);
+    if (!isNaN(dt)) return dt;
+  }
+
+  // 2) Try ISO / ISO-like: "2025-08-31 20:30" or "2025-08-31T20:30"
+  m = line.match(/(\d{4}-\d{2}-\d{2})[T\s]+(\d{1,2}:\d{2}(?::\d{2})?)/);
+  if (m) {
+    try {
+      const iso = `${m[1]}T${m[2]}`;
+      const dt = new Date(iso);
+      if (!isNaN(dt)) return dt;
+    } catch (e) {}
+  }
+
+  // 3) Try numeric date + time like "31/08/2025 08:30 AM" or "31-08-2025 20:30"
+  m = line.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)/);
+  if (m) {
+    const datePart = m[1];
+    const timePart = m[2];
+
+    const parts = datePart.split(/[-\/]/).map(s => parseInt(s, 10));
+    if (parts.length === 3) {
+      // Try both dd/mm/yyyy and mm/dd/yyyy if ambiguous
+      const year = parts[2] < 100 ? 2000 + parts[2] : parts[2];
+
+      const tryBuild = (day, month) => {
+        const tm = timePart.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM|am|pm)?/);
+        if (!tm) return null;
+        let hour = parseInt(tm[1], 10);
+        const minute = tm[2] ? parseInt(tm[2], 10) : 0;
+        const ampm = tm[3] ? tm[3].toLowerCase() : null;
+        if (ampm) {
+          if (ampm === 'pm' && hour < 12) hour += 12;
+          if (ampm === 'am' && hour === 12) hour = 0;
+        }
+        const dt = new Date(year, month - 1, day, hour, minute, 0, 0);
+        return isNaN(dt) ? null : dt;
+      };
+
+      // first assume dd/mm/yyyy (common outside US)
+      let dt = tryBuild(parts[0], parts[1]);
+      if (dt) return dt;
+
+      // if that fails and the first part could be month (<=12), try mm/dd/yyyy
+      if (parts[0] <= 12) {
+        dt = tryBuild(parts[1], parts[0]);
+        if (dt) return dt;
+      }
+    }
+  }
+
+  // 4) If nothing matched above, try to catch a "MonthName DD HH:MM" without year — attach current year
+  m = line.match(/([A-Za-z]{3,9})\s+(\d{1,2})\s+(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)/);
+  if (m) {
+    const monthName = m[1];
+    const day = parseInt(m[2], 10);
+    const timePart = m[3];
+    const year = (new Date()).getFullYear();
+    const candidate = `${monthName} ${day}, ${year} ${timePart}`;
+    const dt = new Date(candidate);
+    if (!isNaN(dt)) return dt;
+  }
+
+  // 5) No full datetime found
+  return null;
+}
+
+// Helper functions for time parsing
+function extractTimeFromLine(line) {
+  if (!line) return null;
+  // Try to extract time patterns like "2:30 PM" or "14:30"
+  const timeMatch = line.match(/\b(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)?)\b/);
+  return timeMatch ? timeMatch[1] : null;
+}
+
+function timeStringToDate(timeString, baseDate) {
+  if (!timeString) return null;
+  
+  // Create a copy of the base date
+  const date = new Date(baseDate.getTime());
+  
+  // Parse the time string
+  const timeMatch = timeString.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM|am|pm)?/i);
+  if (!timeMatch) return null;
+  
+  let hours = parseInt(timeMatch[1], 10);
+  const minutes = timeMatch[2] ? parseInt(timeMatch[2], 10) : 0;
+  const period = timeMatch[3] ? timeMatch[3].toUpperCase() : null;
+  
+  // Adjust for 12-hour format
+  if (period === 'PM' && hours < 12) hours += 12;
+  if (period === 'AM' && hours === 12) hours = 0;
+  
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+// ======= NAVBAR FUNCTIONALITY =======
+// Toggle notification dropdown
+document.getElementById('notif-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('notif-dropdown');
+    dropdown.classList.toggle('hidden');
+});
+
+// Toggle profile menu
+document.getElementById('profile-menu-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('profile-menu');
+    menu.classList.toggle('hidden');
+});
+
+// Close dropdowns when clicking elsewhere
+document.addEventListener('click', function() {
+    document.getElementById('notif-dropdown').classList.add('hidden');
+    document.getElementById('profile-menu').classList.add('hidden');
+});
+
+// Mobile menu functionality
+document.getElementById('mobile-menu-button').addEventListener('click', function() {
+    document.getElementById('mobile-menu').classList.add('show');
+});
+
+document.getElementById('close-mobile-menu').addEventListener('click', function() {
+    document.getElementById('mobile-menu').classList.remove('show');
+});
+
+// Dark mode toggle
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const mobileDarkModeToggle = document.getElementById('mobile-dark-mode-toggle');
+    
+    body.classList.toggle('dark-mode');
+    darkModeToggle.classList.toggle('active');
+    mobileDarkModeToggle.classList.toggle('active');
+    
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+}
+
+// Check for saved dark mode preference
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('dark-mode-toggle').classList.add('active');
+    document.getElementById('mobile-dark-mode-toggle').classList.add('active');
+}
+
+// Mark all notifications as read
+function markAllNotificationsAsRead() {
+    document.getElementById('notif-badge').textContent = '0';
+    document.getElementById('notif-badge').style.display = 'none';
+    showToast('All notifications marked as read');
+}
+
+// Show toast notification
+function showToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-md z-50';
+    toast.textContent = message;
+    
+    // Add to document
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Open profile modal
+function openProfileModal() {
+    showToast('Profile modal would open here');
+}
+
+// Open settings modal
+function openSettingsModal() {
+    showToast('Settings modal would open here');
+}
+
+// Logout function
+function logout() {
+    showToast('Logging out...');
+    setTimeout(() => {
+        window.location.href = 'login.html';
+    }, 1000);
+}
+
+function loadUserProfile() {
+    // First try to get data from currentUser object
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser && currentUser.name) {
+        // User is logged in with new format
+        document.getElementById('profile-name').textContent = currentUser.name;
+        
+        // Update profile image if available
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        } else if (profileImgElement) {
+            // Generate initials from user name
+            const initials = getInitials(currentUser.name);
+            profileImgElement.src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+        }
+        
+        // Update profile menu for logged in user
+        const profileMenu = document.getElementById('profile-menu');
+        if (profileMenu) {
+            profileMenu.innerHTML = `
+                <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+            `;
+        }
+    } else {
+        // Fallback to old format or show guest user
+        const userEmail = localStorage.getItem('userEmail');
+        const userName = localStorage.getItem('userName');
+        
+        if (userName) {
+            // User is logged in with old format - USE THE USERNAME, NOT EMAIL
+            document.getElementById('profile-name').textContent = userName;
+            
+            // Generate initials from user name
+            const initials = getInitials(userName);
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+            
+            // Update profile menu for logged in user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="openProfileModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Edit Profile</button>
+                    <button onclick="openSettingsModal()" class="block w-full text-left px-4 py-2 hover:bg-gray-100">Settings</button>
+                    <button onclick="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
+                `;
+            }
+        } else {
+            // User not logged in, show guest state
+            document.getElementById('profile-name').textContent = 'Guest';
+            document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=GU&background=8B5A2B&color=fff';
+            
+            // Update profile menu for guest user
+            const profileMenu = document.getElementById('profile-menu');
+            if (profileMenu) {
+                profileMenu.innerHTML = `
+                    <button onclick="login()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Login</button>
+                    <button onclick="signup()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-[var(--primary-brown)]">Sign Up</button>
+                `;
+            }
+        }
+    }
+}
+
+// Helper function to get initials from a name
+function getInitials(name) {
+    if (!name) return 'GU';
+    
+    return name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .join('')
+        .substring(0, 2); // Get first 2 letters max
+}
+
+// Redirect to login page
+function login() {
+    window.location.href = 'login.html';
+}
+
+// Redirect to signup page
+function signup() {
+    window.location.href = 'signup.html'; // Update with your actual signup page URL
+}
+
+// Logout function
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear user data from localStorage
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userProfileImg');
+        
+        // Reset to guest avatar
+        document.getElementById('profile-img').src = 'https://ui-avatars.com/api/?name=US&background=8B5A2B&color=fff';
+        
+        // Reload the profile to show guest state
+        loadUserProfile();
+        
+        // Show logout message
+        showNotification('You have been logged out');
+        // Redirect to login page
+        window.location.href = 'login.html';
+    }
+}
+
+// Open profile modal
+function openProfileModal() {
+    // Populate with current data
+    const userName = localStorage.getItem('userName') || 'User';
+    const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+    const userProfileImg = localStorage.getItem('userProfileImg') || 'https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff';
+    
+    document.getElementById('profile-name-input').value = userName;
+    document.getElementById('profile-email-input').value = userEmail;
+    document.getElementById('profile-preview').src = userProfileImg;
+    
+    document.getElementById('profile-modal').classList.remove('hidden');
+}
+
+// Close profile modal
+function closeProfileModal() {
+    document.getElementById('profile-modal').classList.add('hidden');
+}
+
+// Open settings modal
+function openSettingsModal() {
+    // Sync dark mode toggle state
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    const settingsToggle = document.getElementById('settings-dark-mode-toggle');
+    
+    if (isDarkMode) {
+        settingsToggle.classList.add('active');
+    } else {
+        settingsToggle.classList.remove('active');
+    }
+    
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+
+// Close settings modal
+function closeSettingsModal() {
+    document.getElementById('settings-modal').classList.add('hidden');
+    showNotification('Settings saved successfully!');
+}
+
+// Profile form submission
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('profile-name-input').value;
+    const email = document.getElementById('profile-email-input').value;
+    
+    // Update profile
+    document.getElementById('profile-name').textContent = name;
+    localStorage.setItem('userName', name);
+    // Store user data for profile
+    localStorage.setItem('currentUser', JSON.stringify({
+    email: email,
+    name: user.name || email.split('@')[0] // Use name if available, otherwise use email prefix
+}));
+// Store user data for profile
+localStorage.setItem('currentUser', JSON.stringify({
+    email: email,
+    name: name // This should be from your signup form
+}));
+    
+    // Update avatar with new initials
+    const initials = getInitials(name);
+    document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    document.getElementById('profile-preview').src = `https://ui-avatars.com/api/?name=${initials}&background=8B5A2B&color=fff`;
+    
+    closeProfileModal();
+    showNotification('Profile updated successfully!');
+});
+
+// Profile image upload
+document.getElementById('profile-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            // Update both preview and main profile image
+            document.getElementById('profile-preview').src = event.target.result;
+            document.getElementById('profile-img').src = event.target.result;
+            
+            // Store the custom image in localStorage
+            localStorage.setItem('userProfileImg', event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+// Function to update user profile display
+function updateUserProfile() {
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    
+    if (currentUser) {
+        // Update profile name if element exists
+        const profileNameElement = document.getElementById('profile-name');
+        if (profileNameElement) {
+            profileNameElement.textContent = currentUser.name;
+        }
+        
+        // Update profile image if element exists
+        const profileImgElement = document.getElementById('profile-img');
+        if (profileImgElement && currentUser.photoURL) {
+            profileImgElement.src = currentUser.photoURL;
+        }
+        
+        // Show user profile, hide login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (loginButton) loginButton.classList.add('hidden');
+        if (signupButton) signupButton.classList.add('hidden');
+        if (notificationIcons) notificationIcons.classList.remove('hidden');
+        if (reminderIcons) reminderIcons.classList.remove('hidden');
+    } else {
+        // User not logged in, show login/signup buttons
+        const userProfile = document.getElementById('user-profile');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const notificationIcons = document.getElementById('notification-icons');
+        const reminderIcons = document.getElementById('reminder-icons');
+        
+        if (userProfile) userProfile.classList.add('hidden');
+        if (loginButton) loginButton.classList.remove('hidden');
+        if (signupButton) signupButton.classList.remove('hidden');
+        if (notificationIcons) notificationIcons.classList.add('hidden');
+        if (reminderIcons) reminderIcons.classList.add('hidden');
+    }
+}
+
+
+});
+
+ </script>
+ <!-- Profile Modal -->
+<div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+        
+        <form id="profile-form">
+            <div class="flex flex-col items-center mb-6">
+                <div class="relative mb-4">
+                    <img src="https://ui-avatars.com/api/?name=User&background=8B5A2B&color=fff" 
+                         alt="Profile" class="w-24 h-24 rounded-full object-cover" id="profile-preview">
+                    <label for="profile-upload" class="absolute bottom-0 right-0 bg-[var(--primary-brown)] text-white p-2 rounded-full cursor-pointer">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="profile-upload" class="hidden" accept="image/*">
+                </div>
+                <p class="text-gray-600">Click camera icon to change photo</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-name">Full Name</label>
+                <input type="text" id="profile-name-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="User" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2" for="profile-email">Email</label>
+                <input type="email" id="profile-email-input" class="form-input w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[var(--primary-brown)]" value="user@example.com" required>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <button type="button" onclick="closeProfileModal()" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-semibold">Cancel</button>
+                <button type="submit" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md relative">
+        <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        
+        <h2 class="text-2xl font-bold mb-6">Settings</h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="font-bold mb-4">Appearance</h3>
+                <div class="flex items-center justify-between">
+                    <span>Dark Mode</span>
+                    <div id="settings-dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold mb-4">Notifications</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span>Email Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Push Notifications</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--primary-brown)]"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button onclick="closeSettingsModal()" class="btn-primary px-6 py-3 rounded-lg text-white font-semibold">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
